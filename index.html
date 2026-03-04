@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game O'CLock 2026</title>
+<title>Game O'Clock</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -516,8 +516,8 @@
       <div class="phase-dot"></div>
       <span id="phase-label">Loading...</span>
     </div>
-    <h1>Game O'CLock 2026</h1>
-    <p class="subtitle">Suggest 2 games, cast 5 votes, I'll be playing the top 12</p>
+    <h1>Game O'Clock</h1>
+    <p class="subtitle">Suggest 2 games, cast 5 votes, top 12 will be played</p>
     <div class="countdown" id="countdown-wrap">
       ⏱ <strong id="countdown-text">—</strong>
     </div>
@@ -545,7 +545,7 @@
 // ═══════════════════════════════════════════════════
 //  CONFIGURATION — edit these values
 // ═══════════════════════════════════════════════════
-const SHEET_URL = "https://script.google.com/macros/s/AKfycby8UErS82ZmnSqigaBkJVKJzmATDWqCPZrgzWXu6X9mDwo1XH11OlmcGV-mKdHPS_5Y/exec"; // paste your Apps Script web app URL
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbw7tkDlTJGOI3XtwcUtTSE3IloFpL47jCZv0CdYTuQWFJQ9jxNUZGqMi2Eur8GBdZy3/exec"; // paste your Apps Script web app URL
 const ADMIN_PASSWORD = "abc123";
 const TOTAL_VOTES = 5;
 const MAX_OPTIONS_PER_USER = 2;
@@ -932,7 +932,7 @@ async function addOption() {
     showToast("Suggestion added!", "success");
     render();
   } else {
-    showToast("Couldn't save — try again", "error");
+    showToast(res.error || "Couldn't save — try again", "error");
     input.disabled = false;
     btn.disabled = false;
     btn.textContent = "Add";
@@ -1003,7 +1003,7 @@ async function submitVotes() {
     showToast("Votes submitted!", "success");
     render();
   } else {
-    showToast("Couldn't submit — try again", "error");
+    showToast(res.error || "Couldn't submit — try again", "error");
     btn.disabled = false;
     btn.textContent = "Submit My Votes";
   }
@@ -1073,4 +1073,4 @@ setInterval(() => {
 }, 10000);
 </script>
 </body>
-</html>
+</html>SHE
