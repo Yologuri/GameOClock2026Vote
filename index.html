@@ -3,507 +3,1025 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vote Allocator</title>
+<title>Vote Board</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Instrument+Sans:wght@400;500;600&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0f0e11;
-    --surface: #1a1820;
-    --border: #2e2b38;
-    --accent: #c8f064;
-    --accent2: #7c6af5;
-    --text: #f0ecff;
-    --muted: #7a7589;
-    --danger: #ff6b6b;
+    --bg: #faf7f2;
+    --surface: #ffffff;
+    --ink: #1a1612;
+    --ink2: #6b6560;
+    --border: #e8e3db;
+    --accent: #c84b2f;
+    --accent-light: #fdf0ed;
+    --gold: #d4a843;
+    --green: #2d7a4f;
+    --green-light: #edf7f2;
   }
 
   body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Instrument Sans', sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--ink);
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
-    background-image: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(124,106,245,0.15) 0%, transparent 70%);
+    padding: 2rem 1rem 4rem;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(200,75,47,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(212,168,67,0.06) 0%, transparent 50%);
   }
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    width: 100%;
-    max-width: 540px;
-    overflow: hidden;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  .container {
+    max-width: 580px;
+    margin: 0 auto;
   }
 
-  .header {
-    padding: 2.5rem 2.5rem 2rem;
-    border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, rgba(124,106,245,0.08), transparent);
-  }
-
-  .header h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.75rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
-  }
-
-  .header p {
-    color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-
-  .votes-bar {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.25rem 2.5rem;
-    border-bottom: 1px solid var(--border);
-    background: rgba(200,240,100,0.04);
-  }
-
-  .votes-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .vote-pips {
-    display: flex;
-    gap: 6px;
-    flex: 1;
-  }
-
-  .pip {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    background: transparent;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* ── Header ── */
+  .masthead {
+    text-align: center;
+    padding: 2.5rem 0 2rem;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 2rem;
     position: relative;
   }
 
-  .pip.used {
-    background: var(--accent);
-    border-color: var(--accent);
-    box-shadow: 0 0 12px rgba(200,240,100,0.4);
-    transform: scale(1.1);
+  .phase-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 1rem;
   }
 
-  .remaining-count {
-    font-family: 'Syne', sans-serif;
+  .phase-tag.submission { background: #fff8e6; color: var(--gold); border: 1px solid var(--gold); }
+  .phase-tag.voting { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); }
+  .phase-tag.closed { background: #f0f0f0; color: #888; border: 1px solid #ccc; }
+
+  .phase-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
     font-size: 1rem;
-    font-weight: 700;
-    color: var(--accent);
-    min-width: 80px;
-    text-align: right;
+    color: var(--ink2);
+    margin-top: 0.4rem;
   }
 
-  .options-list {
-    padding: 1.5rem 2.5rem;
+  .countdown {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--ink2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 100px;
+  }
+
+  .countdown strong { color: var(--ink); font-weight: 600; }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(26,22,18,0.06);
+    margin-bottom: 1.25rem;
+  }
+
+  .card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .card-body { padding: 1.5rem; }
+
+  /* ── Input ── */
+  .input-row {
+    display: flex;
     gap: 0.75rem;
   }
 
-  .option-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.02);
-    transition: border-color 0.2s, background 0.2s;
+  input[type="text"] {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
   }
 
-  .option-row:has(.count:not([data-count="0"])) {
-    border-color: rgba(200,240,100,0.3);
-    background: rgba(200,240,100,0.04);
+  input[type="text"]:focus { border-color: var(--ink); }
+  input[type="text"]::placeholder { color: #b0a99f; }
+  input[type="text"]:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primary {
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    border: none;
+    background: var(--ink);
+    color: white;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #2e2820;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  .remaining-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--ink2);
+    margin-top: 0.75rem;
+  }
+
+  .remaining-badge span {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ── Options list ── */
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .option-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    transition: border-color 0.2s, background 0.2s;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .option-item.has-votes {
+    border-color: rgba(200,75,47,0.3);
+    background: var(--accent-light);
+  }
+
+  .option-number {
+    font-family: 'Fraunces', serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink2);
+    min-width: 20px;
   }
 
   .option-name {
     flex: 1;
     font-size: 0.95rem;
     font-weight: 500;
-    line-height: 1.3;
   }
 
-  .counter {
+  .vote-counter {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     flex-shrink: 0;
   }
 
-  .btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.05);
-    color: var(--text);
-    font-size: 1.1rem;
+  .vcbtn {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--ink);
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-    user-select: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
     line-height: 1;
+    user-select: none;
   }
 
-  .btn:hover:not(:disabled) {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.2);
-    transform: scale(1.05);
-  }
+  .vcbtn:hover:not(:disabled) { border-color: var(--ink); background: var(--ink); color: white; transform: scale(1.08); }
+  .vcbtn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
 
-  .btn.add:hover:not(:disabled) {
-    background: rgba(200,240,100,0.15);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .btn:disabled {
-    opacity: 0.25;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .count {
-    font-family: 'Syne', sans-serif;
+  .vcount {
+    font-family: 'Fraunces', serif;
     font-size: 1.1rem;
-    font-weight: 700;
-    width: 24px;
+    font-weight: 600;
+    min-width: 22px;
     text-align: center;
     color: var(--accent);
     transition: transform 0.15s;
   }
 
-  .count[data-count="0"] {
-    color: var(--muted);
+  .vcount.zero { color: var(--ink2); }
+
+  /* ── Vote pips ── */
+  .pips-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: #fdfcfa;
   }
 
-  .footer {
-    padding: 1.5rem 2.5rem 2rem;
-    border-top: 1px solid var(--border);
+  .pips-label { font-size: 0.75rem; color: var(--ink2); font-weight: 500; }
+
+  .pips {
+    display: flex;
+    gap: 5px;
+    flex: 1;
   }
 
-  .submit-btn {
+  .pip {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .pip.filled {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(200,75,47,0.35);
+    transform: scale(1.12);
+  }
+
+  .pips-count { font-size: 0.8rem; font-weight: 600; color: var(--ink2); white-space: nowrap; }
+
+  /* ── Submit btn ── */
+  .submit-wrap { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+
+  .btn-submit {
     width: 100%;
     padding: 1rem;
     border-radius: 12px;
     border: none;
     background: var(--accent);
-    color: #0f0e11;
-    font-family: 'Syne', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    color: white;
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    letter-spacing: 0.01em;
   }
 
-  .submit-btn:hover:not(:disabled) {
-    background: #d9ff7a;
+  .btn-submit:hover:not(:disabled) {
+    background: #b03d24;
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(200,240,100,0.3);
+    box-shadow: 0 6px 20px rgba(200,75,47,0.3);
   }
 
-  .submit-btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
+  .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .hint {
+  /* ── Empty state ── */
+  .empty {
     text-align: center;
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 0.75rem;
-  }
-
-  /* Success state */
-  .success-screen {
-    display: none;
-    padding: 3rem 2.5rem;
-    text-align: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .success-screen.visible {
-    display: flex;
-  }
-
-  .success-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: rgba(200,240,100,0.15);
-    border: 2px solid var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
-    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes popIn {
-    from { transform: scale(0); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-
-  .success-screen h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 800;
-  }
-
-  .success-screen p {
-    color: var(--muted);
+    padding: 2rem 1rem;
+    color: var(--ink2);
     font-size: 0.9rem;
-    line-height: 1.6;
+    font-style: italic;
   }
 
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 100;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--accent); }
+  .toast.success { background: var(--green); }
+
+  /* ── Admin ── */
+  .admin-bar {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--border);
+  }
+
+  .admin-toggle {
+    font-size: 0.75rem;
+    color: var(--ink2);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: 'Instrument Sans', sans-serif;
+  }
+
+  .admin-panel {
+    display: none;
+    margin-top: 1rem;
+  }
+
+  .admin-panel.visible { display: block; }
+
+  .admin-input-row {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .admin-input-row input {
+    max-width: 160px;
+    text-align: center;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Results ── */
   .results-list {
-    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 0.6rem;
   }
 
   .result-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.6rem 1rem;
-    background: rgba(200,240,100,0.06);
-    border: 1px solid rgba(200,240,100,0.15);
-    border-radius: 8px;
-    font-size: 0.9rem;
-  }
-
-  .result-item .result-name { color: var(--text); }
-  .result-item .result-votes {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    color: var(--accent);
-  }
-
-  .reset-btn {
-    margin-top: 1rem;
-    padding: 0.6rem 1.5rem;
-    border-radius: 8px;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
     border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-family: 'DM Sans', sans-serif;
+    border-radius: 10px;
+    background: var(--bg);
+    animation: slideIn 0.3s ease both;
+  }
+
+  .result-item.winner {
+    border-color: var(--gold);
+    background: #fffbf0;
+  }
+
+  .result-rank {
+    font-family: 'Fraunces', serif;
     font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.15s;
+    font-weight: 900;
+    color: var(--ink2);
+    min-width: 24px;
   }
 
-  .reset-btn:hover {
-    border-color: rgba(255,255,255,0.2);
-    color: var(--text);
+  .result-rank.first { color: var(--gold); }
+
+  .result-name { flex: 1; font-size: 0.95rem; font-weight: 500; }
+
+  .result-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .result-bar { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.6s ease; }
+  .result-item.winner .result-bar { background: var(--gold); }
+
+  .result-votes {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    min-width: 55px;
+    text-align: right;
   }
 
-  /* Pulse animation on count change */
-  @keyframes countPop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.4); }
-    100% { transform: scale(1); }
+  /* ── Success ── */
+  .success-state {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
   }
 
-  .count.pop {
-    animation: countPop 0.2s ease;
+  .success-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--green-light);
+    border: 2px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 1rem;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
+
+  @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .success-state h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-bottom: 0.4rem;
+  }
+
+  .success-state p { color: var(--ink2); font-size: 0.9rem; }
+
+  /* Closed phase */
+  .closed-msg {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .closed-msg .big {
+    font-family: 'Fraunces', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .closed-msg p { color: var(--ink2); font-size: 0.9rem; }
+
+  /* Loading spinner */
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
+<div class="container">
 
-<div class="card">
-  <div id="form-section">
-    <div class="header">
-      <h1>Cast Your Votes</h1>
-      <p>You have <strong>5 votes</strong> to distribute however you like. Stack them all on one choice or spread them out.</p>
+  <!-- Masthead -->
+  <div class="masthead">
+    <div class="phase-tag" id="phase-tag">
+      <div class="phase-dot"></div>
+      <span id="phase-label">Loading...</span>
     </div>
+    <h1>Vote Board</h1>
+    <p class="subtitle">suggest, deliberate, decide</p>
+    <div class="countdown" id="countdown-wrap">
+      ⏱ <strong id="countdown-text">—</strong>
+    </div>
+  </div>
 
-    <div class="votes-bar">
-      <span class="votes-label">Votes used</span>
-      <div class="vote-pips" id="pips">
-        <div class="pip" id="pip-0"></div>
-        <div class="pip" id="pip-1"></div>
-        <div class="pip" id="pip-2"></div>
-        <div class="pip" id="pip-3"></div>
-        <div class="pip" id="pip-4"></div>
+  <!-- Main content -->
+  <div id="main-content"></div>
+
+  <!-- Admin bar -->
+  <div class="admin-bar">
+    <button class="admin-toggle" onclick="toggleAdminPanel()">admin</button>
+    <div class="admin-panel" id="admin-panel">
+      <div class="admin-input-row">
+        <input type="password" id="admin-pw" placeholder="password" />
+        <button class="btn-primary" onclick="adminLogin()">Enter</button>
       </div>
-      <span class="remaining-count" id="remaining-text">0 / 5</span>
-    </div>
-
-    <div class="options-list" id="options-container">
-      <!-- Options rendered by JS -->
-    </div>
-
-    <div class="footer">
-      <button class="submit-btn" id="submit-btn" disabled onclick="handleSubmit()">
-        Submit Votes
-      </button>
-      <p class="hint" id="hint-text">Allocate all 5 votes to submit</p>
     </div>
   </div>
 
-  <div class="success-screen" id="success-section">
-    <div class="success-icon">✓</div>
-    <h2>Votes Submitted!</h2>
-    <p>Here's how you allocated your 5 votes:</p>
-    <div class="results-list" id="results-list"></div>
-    <button class="reset-btn" onclick="resetForm()">Submit another response</button>
-  </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-  // ── EDIT YOUR OPTIONS HERE ──────────────────────────────────
-  const FORM_TITLE = "Cast Your Votes";
-  const TOTAL_VOTES = 5;
-  const options = [
-    "Option A",
-    "Option B",
-    "Option C",
-    "Option D",
-    "Option E",
-  ];
-  // ────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  CONFIGURATION — edit these values
+// ═══════════════════════════════════════════════════
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyGrSDS08zSG_cjx-AQzCm6pOSpbFpTa9wI7lD8Jy0zJD7H9hvxNHtlhGfC_bDH61Nl/exec"; // paste your Apps Script web app URL
+const ADMIN_PASSWORD = "abc123";
+const TOTAL_VOTES = 5;
+const MAX_OPTIONS_PER_USER = 2;
+const TIMEZONE = "America/New_York"; // Eastern
 
-  let votes = new Array(options.length).fill(0);
+// Phase times (today, Eastern)
+// Submission phase: midnight → 11:59 PM  (all day)
+// Voting phase: starts at 6:00 PM ET, ends at 11:59 PM ET
+// After midnight: closed
+const VOTING_START_HOUR = 20; // 6 PM ET — change this if you want voting to start earlier/later
+// ═══════════════════════════════════════════════════
 
-  function totalUsed() {
-    return votes.reduce((a, b) => a + b, 0);
-  }
+// ── State ──
+let phase = "submission"; // "submission" | "voting" | "closed"
+let options = [];
+let userVotes = {};
+let userOptionCount = 0;
+let votesAllocated = {};
+let hasVoted = false;
+let hasSubmittedOptions = false;
+let isAdmin = false;
+let resultsRevealed = false;
 
-  function render() {
-    const used = totalUsed();
-    const remaining = TOTAL_VOTES - used;
+// ── Persistence (localStorage for per-user limits) ──
+const STORAGE_KEY = "voteboard_" + new Date().toLocaleDateString("en-CA", {timeZone: TIMEZONE});
 
-    // Pips
-    for (let i = 0; i < TOTAL_VOTES; i++) {
-      const pip = document.getElementById(`pip-${i}`);
-      pip.classList.toggle('used', i < used);
+function loadUserState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      userOptionCount = s.optionCount || 0;
+      hasVoted = s.hasVoted || false;
     }
+  } catch(e) {}
+}
 
-    document.getElementById('remaining-text').textContent = `${used} / ${TOTAL_VOTES}`;
+function saveUserState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      optionCount: userOptionCount,
+      hasVoted: hasVoted
+    }));
+  } catch(e) {}
+}
 
-    // Submit button
-    const submitBtn = document.getElementById('submit-btn');
-    submitBtn.disabled = used !== TOTAL_VOTES;
-    document.getElementById('hint-text').textContent =
-      used === TOTAL_VOTES
-        ? "All votes placed — ready to submit!"
-        : `${remaining} vote${remaining !== 1 ? 's' : ''} remaining`;
+// ── Phase detection ──
+function detectPhase() {
+  const now = new Date();
+  const etNow = new Date(now.toLocaleString("en-US", { timeZone: TIMEZONE }));
+  const h = etNow.getHours();
+  const m = etNow.getMinutes();
+  const totalMins = h * 60 + m;
+  const votingStartMins = VOTING_START_HOUR * 60;
+  const endMins = 23 * 60 + 59;
 
-    // Update each option row
-    options.forEach((_, i) => {
-      const countEl = document.getElementById(`count-${i}`);
-      const addBtn = document.getElementById(`add-${i}`);
-      const subBtn = document.getElementById(`sub-${i}`);
+  if (totalMins < votingStartMins) return "submission";
+  if (totalMins <= endMins) return "voting";
+  return "closed";
+}
 
-      countEl.dataset.count = votes[i];
-      countEl.textContent = votes[i];
-      addBtn.disabled = remaining === 0;
-      subBtn.disabled = votes[i] === 0;
+function getPhaseEndTime() {
+  const now = new Date();
+  const etNow = new Date(now.toLocaleString("en-US", { timeZone: TIMEZONE }));
+  const result = new Date(etNow);
+  if (phase === "submission") {
+    result.setHours(VOTING_START_HOUR, 0, 0, 0);
+  } else {
+    result.setHours(23, 59, 59, 0);
+  }
+  // Convert back to UTC-based Date for diff calculation
+  const diff = result - etNow;
+  return diff;
+}
+
+function formatCountdown(ms) {
+  if (ms <= 0) return "ending soon";
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}h ${m}m remaining`;
+  if (m > 0) return `${m}m ${sec}s remaining`;
+  return `${sec}s remaining`;
+}
+
+// ── API calls ──
+async function apiCall(action, payload = {}) {
+  if (!SHEET_URL || SHEET_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
+    // Demo mode — just use local state
+    return { success: true, demo: true };
+  }
+  try {
+    const res = await fetch(SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, ...payload })
     });
+    return await res.json();
+  } catch(e) {
+    return { success: false, error: e.message };
+  }
+}
+
+async function fetchOptions() {
+  const res = await apiCall("getOptions");
+  if (res.demo) return; // demo mode, options stay local
+  if (res.success && res.options) {
+    options = res.options;
+  }
+}
+
+async function fetchResults() {
+  const res = await apiCall("getResults");
+  if (res.demo) {
+    // In demo mode, show mock results
+    return options.map((o, i) => ({ name: o, votes: Math.floor(Math.random() * 10) }));
+  }
+  if (res.success && res.results) return res.results;
+  return [];
+}
+
+// ── Toast ──
+let toastTimer;
+function showToast(msg, type = "") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = "toast"; }, 3000);
+}
+
+// ── Render ──
+function renderPhaseTag() {
+  const tag = document.getElementById("phase-tag");
+  const label = document.getElementById("phase-label");
+  tag.className = "phase-tag";
+  if (phase === "submission") {
+    tag.classList.add("submission");
+    label.textContent = "Submissions Open";
+  } else if (phase === "voting") {
+    tag.classList.add("voting");
+    label.textContent = "Voting Open";
+  } else {
+    tag.classList.add("closed");
+    document.querySelector(".phase-dot").style.animation = "none";
+    label.textContent = "Closed";
+  }
+}
+
+function render() {
+  phase = detectPhase();
+  renderPhaseTag();
+
+  const content = document.getElementById("main-content");
+
+  if (phase === "submission") {
+    renderSubmissionPhase(content);
+  } else if (phase === "voting") {
+    renderVotingPhase(content);
+  } else {
+    renderClosedPhase(content);
   }
 
-  function changeVote(index, delta) {
-    const newVal = votes[index] + delta;
-    const newTotal = totalUsed() + delta;
-    if (newVal < 0 || newTotal > TOTAL_VOTES) return;
-    votes[index] = newVal;
+  updateCountdown();
+}
 
-    // Animate count
-    const countEl = document.getElementById(`count-${index}`);
-    countEl.classList.remove('pop');
-    void countEl.offsetWidth;
-    countEl.classList.add('pop');
-
-    render();
-  }
-
-  function buildOptions() {
-    const container = document.getElementById('options-container');
-    container.innerHTML = '';
-    options.forEach((name, i) => {
-      container.innerHTML += `
-        <div class="option-row" id="row-${i}">
-          <span class="option-name">${name}</span>
-          <div class="counter">
-            <button class="btn sub" id="sub-${i}" disabled onclick="changeVote(${i}, -1)">−</button>
-            <span class="count" id="count-${i}" data-count="0">0</span>
-            <button class="btn add" id="add-${i}" onclick="changeVote(${i}, 1)">+</button>
-          </div>
+function renderSubmissionPhase(content) {
+  const remaining = MAX_OPTIONS_PER_USER - userOptionCount;
+  content.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Suggest an Option</span>
+        <span style="font-size:0.8rem;color:var(--ink2)">${remaining} suggestion${remaining !== 1 ? 's' : ''} left</span>
+      </div>
+      <div class="card-body">
+        <div class="input-row">
+          <input type="text" id="option-input" placeholder="Type your suggestion…" maxlength="80"
+            ${remaining === 0 ? 'disabled' : ''}
+            onkeydown="if(event.key==='Enter') addOption()" />
+          <button class="btn-primary" onclick="addOption()" ${remaining === 0 ? 'disabled' : ''}>Add</button>
         </div>
-      `;
-    });
+        ${remaining === 0 ? '<p style="font-size:0.8rem;color:var(--ink2);margin-top:0.75rem">You\'ve used all your suggestions for today.</p>' : ''}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">All Suggestions</span>
+        <span style="font-size:0.8rem;color:var(--ink2)">${options.length} so far</span>
+      </div>
+      <div class="card-body">
+        <div class="options-list" id="options-list">
+          ${options.length === 0
+            ? '<div class="empty">No suggestions yet — be the first!</div>'
+            : options.map((o, i) => `
+              <div class="option-item">
+                <span class="option-number">${i + 1}</span>
+                <span class="option-name">${escHtml(o)}</span>
+              </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align:center;font-size:0.8rem;color:var(--ink2);margin-top:0.5rem">
+      Voting opens at ${VOTING_START_HOUR > 12 ? VOTING_START_HOUR - 12 : VOTING_START_HOUR}:00 ${VOTING_START_HOUR >= 12 ? 'PM' : 'AM'} ET
+    </p>
+  `;
+}
+
+function renderVotingPhase(content) {
+  if (hasVoted) {
+    content.innerHTML = `
+      <div class="card">
+        <div class="success-state">
+          <div class="success-icon">✓</div>
+          <h2>Votes Submitted!</h2>
+          <p>Results will be revealed by the organizer.</p>
+        </div>
+      </div>`;
+    return;
   }
 
-  function handleSubmit() {
-    if (totalUsed() !== TOTAL_VOTES) return;
+  const used = Object.values(votesAllocated).reduce((a, b) => a + b, 0);
+  const remaining = TOTAL_VOTES - used;
 
-    // Build results
-    const resultsList = document.getElementById('results-list');
-    resultsList.innerHTML = '';
-    options.forEach((name, i) => {
-      if (votes[i] > 0) {
-        resultsList.innerHTML += `
-          <div class="result-item">
-            <span class="result-name">${name}</span>
-            <span class="result-votes">${votes[i]} vote${votes[i] !== 1 ? 's' : ''}</span>
-          </div>
-        `;
-      }
-    });
+  content.innerHTML = `
+    <div class="card">
+      <div class="pips-row">
+        <span class="pips-label">Votes placed</span>
+        <div class="pips">
+          ${Array.from({length: TOTAL_VOTES}, (_, i) => `<div class="pip ${i < used ? 'filled' : ''}"></div>`).join('')}
+        </div>
+        <span class="pips-count">${used} / ${TOTAL_VOTES}</span>
+      </div>
 
-    document.getElementById('form-section').style.display = 'none';
-    const success = document.getElementById('success-section');
-    success.classList.add('visible');
+      <div class="card-body">
+        <div class="options-list" id="vote-options">
+          ${options.length === 0
+            ? '<div class="empty">No options were submitted.</div>'
+            : options.map((o, i) => {
+                const v = votesAllocated[i] || 0;
+                return `
+                  <div class="option-item ${v > 0 ? 'has-votes' : ''}" id="vrow-${i}">
+                    <span class="option-number">${i + 1}</span>
+                    <span class="option-name">${escHtml(o)}</span>
+                    <div class="vote-counter">
+                      <button class="vcbtn" id="sub-${i}" onclick="changeVote(${i}, -1)" ${v === 0 ? 'disabled' : ''}>−</button>
+                      <span class="vcount ${v === 0 ? 'zero' : ''}" id="vc-${i}">${v}</span>
+                      <button class="vcbtn" id="add-${i}" onclick="changeVote(${i}, 1)" ${remaining === 0 ? 'disabled' : ''}>+</button>
+                    </div>
+                  </div>`;
+              }).join('')}
+        </div>
+      </div>
+
+      <div class="submit-wrap">
+        <button class="btn-submit" id="submit-votes-btn" onclick="submitVotes()" ${used !== TOTAL_VOTES ? 'disabled' : ''}>
+          ${used === TOTAL_VOTES ? 'Submit My Votes' : `Place ${remaining} more vote${remaining !== 1 ? 's' : ''} to submit`}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderClosedPhase(content) {
+  content.innerHTML = `
+    <div class="card">
+      <div class="closed-msg">
+        <div class="big">🔒</div>
+        <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;margin-bottom:0.5rem">Submissions Closed</h2>
+        <p>Today's voting has ended. Check back tomorrow!</p>
+      </div>
+    </div>
+  `;
+
+  if (isAdmin && resultsRevealed) {
+    renderResults(content, true);
+  }
+}
+
+async function renderResults(container, append = false) {
+  const results = await fetchResults();
+  if (!results || results.length === 0) return;
+
+  results.sort((a, b) => b.votes - a.votes);
+  const maxVotes = results[0]?.votes || 1;
+
+  const html = `
+    <div class="card" style="margin-top:1.25rem">
+      <div class="card-header">
+        <span class="card-title">Results</span>
+        <span style="font-size:0.8rem;color:var(--ink2)">${results.reduce((a,b)=>a+b.votes,0)} total votes</span>
+      </div>
+      <div class="card-body">
+        <div class="results-list">
+          ${results.map((r, i) => `
+            <div class="result-item ${i === 0 ? 'winner' : ''}" style="animation-delay:${i * 0.07}s">
+              <span class="result-rank ${i === 0 ? 'first' : ''}">${i === 0 ? '🥇' : '#' + (i+1)}</span>
+              <span class="result-name">${escHtml(r.name)}</span>
+              <div class="result-bar-wrap"><div class="result-bar" style="width:${Math.round((r.votes / maxVotes) * 100)}%"></div></div>
+              <span class="result-votes">${r.votes} vote${r.votes !== 1 ? 's' : ''}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (append) {
+    container.insertAdjacentHTML('beforeend', html);
+  } else {
+    container.innerHTML = html;
+  }
+}
+
+// ── Actions ──
+async function addOption() {
+  const input = document.getElementById("option-input");
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) { showToast("Please enter a suggestion", "error"); return; }
+  if (userOptionCount >= MAX_OPTIONS_PER_USER) { showToast("You've used all your suggestions", "error"); return; }
+
+  input.disabled = true;
+  const btn = input.nextElementSibling;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  const res = await apiCall("addOption", { option: val });
+
+  if (res.success || res.demo) {
+    options.push(val);
+    userOptionCount++;
+    saveUserState();
+    input.value = "";
+    showToast("Suggestion added!", "success");
+    render();
+  } else {
+    showToast("Couldn't save — try again", "error");
+    input.disabled = false;
+    btn.disabled = false;
+    btn.textContent = "Add";
+  }
+}
+
+function changeVote(index, delta) {
+  const current = votesAllocated[index] || 0;
+  const used = Object.values(votesAllocated).reduce((a, b) => a + b, 0);
+  const newVal = current + delta;
+  const newUsed = used + delta;
+
+  if (newVal < 0 || newUsed > TOTAL_VOTES || newUsed < 0) return;
+  votesAllocated[index] = newVal;
+
+  // Update just the relevant elements without full re-render
+  const vc = document.getElementById(`vc-${index}`);
+  const row = document.getElementById(`vrow-${index}`);
+  const subBtn = document.getElementById(`sub-${index}`);
+
+  if (vc) {
+    vc.textContent = newVal;
+    vc.className = "vcount" + (newVal === 0 ? " zero" : "");
+  }
+  if (row) row.className = "option-item" + (newVal > 0 ? " has-votes" : "");
+  if (subBtn) subBtn.disabled = newVal === 0;
+
+  // Update all add buttons
+  const newRemaining = TOTAL_VOTES - (Object.values(votesAllocated).reduce((a, b) => a + b, 0));
+  options.forEach((_, i) => {
+    const addBtn = document.getElementById(`add-${i}`);
+    if (addBtn) addBtn.disabled = newRemaining === 0;
+  });
+
+  // Update pips
+  const totalUsed = Object.values(votesAllocated).reduce((a, b) => a + b, 0);
+  document.querySelectorAll(".pip").forEach((p, i) => {
+    p.classList.toggle("filled", i < totalUsed);
+  });
+
+  // Update submit button
+  const submitBtn = document.getElementById("submit-votes-btn");
+  if (submitBtn) {
+    submitBtn.disabled = totalUsed !== TOTAL_VOTES;
+    submitBtn.textContent = totalUsed === TOTAL_VOTES
+      ? "Submit My Votes"
+      : `Place ${TOTAL_VOTES - totalUsed} more vote${TOTAL_VOTES - totalUsed !== 1 ? 's' : ''} to submit`;
   }
 
-  function resetForm() {
-    votes = new Array(options.length).fill(0);
-    document.getElementById('success-section').classList.remove('visible');
-    document.getElementById('form-section').style.display = '';
+  const pipsCount = document.querySelector(".pips-count");
+  if (pipsCount) pipsCount.textContent = `${totalUsed} / ${TOTAL_VOTES}`;
+}
+
+async function submitVotes() {
+  const used = Object.values(votesAllocated).reduce((a, b) => a + b, 0);
+  if (used !== TOTAL_VOTES) return;
+
+  const btn = document.getElementById("submit-votes-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Submitting…';
+
+  const voteData = options.map((name, i) => ({ name, votes: votesAllocated[i] || 0 }));
+  const res = await apiCall("submitVotes", { votes: voteData });
+
+  if (res.success || res.demo) {
+    hasVoted = true;
+    saveUserState();
+    showToast("Votes submitted!", "success");
+    render();
+  } else {
+    showToast("Couldn't submit — try again", "error");
+    btn.disabled = false;
+    btn.textContent = "Submit My Votes";
+  }
+}
+
+// ── Admin ──
+function toggleAdminPanel() {
+  document.getElementById("admin-panel").classList.toggle("visible");
+}
+
+function adminLogin() {
+  const pw = document.getElementById("admin-pw").value;
+  if (pw === ADMIN_PASSWORD) {
+    isAdmin = true;
+    document.getElementById("admin-panel").innerHTML = `
+      <p style="font-size:0.8rem;color:var(--green);font-weight:600;margin-bottom:0.75rem">✓ Admin mode active</p>
+      <button class="btn-primary" onclick="revealResults()" style="background:var(--gold);border:none">Reveal Results</button>
+    `;
+    showToast("Admin access granted", "success");
+  } else {
+    showToast("Wrong password", "error");
+    document.getElementById("admin-pw").value = "";
+  }
+}
+
+async function revealResults() {
+  resultsRevealed = true;
+  showToast("Loading results…");
+  const content = document.getElementById("main-content");
+  await renderResults(content, true);
+  showToast("Results revealed!", "success");
+}
+
+// ── Countdown ──
+function updateCountdown() {
+  if (phase === "closed") {
+    document.getElementById("countdown-wrap").style.display = "none";
+    return;
+  }
+  const ms = getPhaseEndTime();
+  document.getElementById("countdown-text").textContent = formatCountdown(ms);
+}
+
+// ── Utils ──
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init ──
+loadUserState();
+
+// Demo: preload some fake options if no backend
+if (!SHEET_URL || SHEET_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
+  options = ["Option A", "Option B", "Option C"];
+}
+
+fetchOptions().then(() => render());
+
+// Update countdown every second, re-check phase every minute
+setInterval(updateCountdown, 1000);
+setInterval(() => {
+  const newPhase = detectPhase();
+  if (newPhase !== phase) {
+    phase = newPhase;
     render();
   }
-
-  // Init
-  buildOptions();
-  render();
+}, 10000);
 </script>
 </body>
 </html>
