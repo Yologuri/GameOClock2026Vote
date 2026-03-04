@@ -544,7 +544,7 @@
 // ═══════════════════════════════════════════════════
 //  CONFIGURATION — edit these values
 // ═══════════════════════════════════════════════════
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbyGrSDS08zSG_cjx-AQzCm6pOSpbFpTa9wI7lD8Jy0zJD7H9hvxNHtlhGfC_bDH61Nl/exec"; // paste your Apps Script web app URL
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbx9G9oPdh8aYballUBW1Bnx5dhKP79ZDvOdc69D2UVni3dZZ_sh0TLE23vqu1siTevq/exec"; // paste your Apps Script web app URL
 const ADMIN_PASSWORD = "abc123";
 const TOTAL_VOTES = 5;
 const MAX_OPTIONS_PER_USER = 2;
@@ -632,18 +632,35 @@ function formatCountdown(ms) {
 }
 
 // ── API calls ──
+// Google Apps Script blocks CORS on POST responses, so:
+//   - Writes (addOption, submitVotes): use no-cors POST (fire-and-forget, assume success)
+//   - Reads (getOptions, getResults):  use GET with URL params (Apps Script allows this)
 async function apiCall(action, payload = {}) {
   if (!SHEET_URL || SHEET_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
-    // Demo mode — just use local state
     return { success: true, demo: true };
   }
+
+  const isRead = action === "getOptions" || action === "getResults";
+
   try {
-    const res = await fetch(SHEET_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action, ...payload })
-    });
-    return await res.json();
+    if (isRead) {
+      // GET request — Apps Script returns JSON fine for GETs
+      const url = new URL(SHEET_URL);
+      url.searchParams.set("action", action);
+      Object.entries(payload).forEach(([k, v]) => url.searchParams.set(k, typeof v === "object" ? JSON.stringify(v) : v));
+      const res = await fetch(url.toString());
+      return await res.json();
+    } else {
+      // POST with no-cors — we can't read the response, but it still hits the server
+      await fetch(SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" }, // text/plain avoids preflight
+        body: JSON.stringify({ action, ...payload })
+      });
+      // Since no-cors returns an opaque response, assume success and move on
+      return { success: true };
+    }
   } catch(e) {
     return { success: false, error: e.message };
   }
