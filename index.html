@@ -5,36 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vote Board</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Instrument+Sans:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #faf7f2;
-    --surface: #ffffff;
-    --ink: #1a1612;
-    --ink2: #6b6560;
-    --border: #e8e3db;
-    --accent: #c84b2f;
-    --accent-light: #fdf0ed;
-    --gold: #d4a843;
-    --green: #2d7a4f;
-    --green-light: #edf7f2;
+    --bg: #0f0e11;
+    --surface: #1a1820;
+    --border: #2e2b38;
+    --accent: #c8f064;
+    --accent2: #7c6af5;
+    --text: #f0ecff;
+    --muted: #7a7589;
+    --danger: #ff6b6b;
+    --gold: #f5c842;
+    --green: #5debb0;
   }
 
   body {
-    font-family: 'Instrument Sans', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     background: var(--bg);
-    color: var(--ink);
+    color: var(--text);
     min-height: 100vh;
     padding: 2rem 1rem 4rem;
-    background-image:
-      radial-gradient(circle at 20% 20%, rgba(200,75,47,0.04) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(212,168,67,0.06) 0%, transparent 50%);
+    background-image: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(124,106,245,0.15) 0%, transparent 70%);
   }
 
   .container {
-    max-width: 580px;
+    max-width: 540px;
     margin: 0 auto;
   }
 
@@ -42,7 +40,7 @@
   .masthead {
     text-align: center;
     padding: 2.5rem 0 2rem;
-    border-bottom: 2px solid var(--ink);
+    border-bottom: 1px solid var(--border);
     margin-bottom: 2rem;
     position: relative;
   }
@@ -52,17 +50,18 @@
     align-items: center;
     gap: 6px;
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 4px 12px;
     border-radius: 100px;
     margin-bottom: 1rem;
+    font-family: 'Syne', sans-serif;
   }
 
-  .phase-tag.submission { background: #fff8e6; color: var(--gold); border: 1px solid var(--gold); }
-  .phase-tag.voting { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); }
-  .phase-tag.closed { background: #f0f0f0; color: #888; border: 1px solid #ccc; }
+  .phase-tag.submission { background: rgba(245,200,66,0.12); color: var(--gold); border: 1px solid rgba(245,200,66,0.4); }
+  .phase-tag.voting { background: rgba(200,240,100,0.1); color: var(--accent); border: 1px solid rgba(200,240,100,0.4); }
+  .phase-tag.closed { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
 
   .phase-dot {
     width: 6px; height: 6px;
@@ -77,19 +76,17 @@
   }
 
   h1 {
-    font-family: 'Fraunces', serif;
-    font-size: clamp(2rem, 6vw, 3rem);
-    font-weight: 900;
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 800;
     line-height: 1;
     letter-spacing: -0.02em;
+    color: var(--text);
   }
 
   .subtitle {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 1rem;
-    color: var(--ink2);
+    font-size: 0.9rem;
+    color: var(--muted);
     margin-top: 0.4rem;
   }
 
@@ -99,22 +96,22 @@
     gap: 6px;
     margin-top: 1rem;
     font-size: 0.8rem;
-    color: var(--ink2);
-    background: var(--surface);
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
     border: 1px solid var(--border);
     padding: 6px 14px;
     border-radius: 100px;
   }
 
-  .countdown strong { color: var(--ink); font-weight: 600; }
+  .countdown strong { color: var(--accent); font-weight: 600; }
 
   /* ── Card ── */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 2px 20px rgba(26,22,18,0.06);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4);
     margin-bottom: 1.25rem;
   }
 
@@ -124,12 +121,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: rgba(255,255,255,0.02);
   }
 
   .card-title {
-    font-family: 'Fraunces', serif;
-    font-size: 1rem;
-    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
   }
 
   .card-body { padding: 1.5rem; }
@@ -145,45 +144,45 @@
     padding: 0.75rem 1rem;
     border: 1.5px solid var(--border);
     border-radius: 10px;
-    font-family: 'Instrument Sans', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 0.95rem;
-    color: var(--ink);
-    background: var(--bg);
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
     outline: none;
     transition: border-color 0.15s;
   }
 
-  input[type="text"]:focus { border-color: var(--ink); }
-  input[type="text"]::placeholder { color: #b0a99f; }
-  input[type="text"]:disabled { opacity: 0.5; cursor: not-allowed; }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+  input[type="text"]:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .btn-primary {
     padding: 0.75rem 1.25rem;
     border-radius: 10px;
     border: none;
-    background: var(--ink);
-    color: white;
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
+    background: var(--accent);
+    color: #0f0e11;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.15s;
   }
 
   .btn-primary:hover:not(:disabled) {
-    background: #2e2820;
+    background: #d9ff7a;
     transform: translateY(-1px);
   }
 
-  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
 
   .remaining-badge {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     font-size: 0.75rem;
-    color: var(--ink2);
+    color: var(--muted);
     margin-top: 0.75rem;
   }
 
@@ -204,9 +203,9 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.9rem 1rem;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
     transition: border-color 0.2s, background 0.2s;
     animation: slideIn 0.25s ease;
   }
@@ -217,22 +216,23 @@
   }
 
   .option-item.has-votes {
-    border-color: rgba(200,75,47,0.3);
-    background: var(--accent-light);
+    border-color: rgba(200,240,100,0.3);
+    background: rgba(200,240,100,0.04);
   }
 
   .option-number {
-    font-family: 'Fraunces', serif;
+    font-family: 'Syne', sans-serif;
     font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--ink2);
+    font-weight: 700;
+    color: var(--muted);
     min-width: 20px;
   }
 
   .option-name {
     flex: 1;
     font-size: 0.95rem;
-    font-weight: 500;
+    font-weight: 400;
+    color: var(--text);
   }
 
   .vote-counter {
@@ -245,9 +245,9 @@
   .vcbtn {
     width: 30px; height: 30px;
     border-radius: 7px;
-    border: 1.5px solid var(--border);
-    background: white;
-    color: var(--ink);
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -257,20 +257,20 @@
     user-select: none;
   }
 
-  .vcbtn:hover:not(:disabled) { border-color: var(--ink); background: var(--ink); color: white; transform: scale(1.08); }
+  .vcbtn:hover:not(:disabled) { border-color: var(--accent); background: rgba(200,240,100,0.12); color: var(--accent); transform: scale(1.08); }
   .vcbtn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
 
   .vcount {
-    font-family: 'Fraunces', serif;
+    font-family: 'Syne', sans-serif;
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 700;
     min-width: 22px;
     text-align: center;
     color: var(--accent);
     transition: transform 0.15s;
   }
 
-  .vcount.zero { color: var(--ink2); }
+  .vcount.zero { color: var(--muted); }
 
   /* ── Vote pips ── */
   .pips-row {
@@ -279,14 +279,13 @@
     gap: 0.75rem;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border);
-    background: #fdfcfa;
   }
 
-  .pips-label { font-size: 0.75rem; color: var(--ink2); font-weight: 500; }
+  .pips-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; font-family: 'Syne', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
 
   .pips {
     display: flex;
-    gap: 5px;
+    gap: 6px;
     flex: 1;
   }
 
@@ -294,18 +293,18 @@
     width: 26px; height: 26px;
     border-radius: 50%;
     border: 2px solid var(--border);
-    background: white;
+    background: transparent;
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .pip.filled {
     background: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 8px rgba(200,75,47,0.35);
-    transform: scale(1.12);
+    box-shadow: 0 0 12px rgba(200,240,100,0.4);
+    transform: scale(1.1);
   }
 
-  .pips-count { font-size: 0.8rem; font-weight: 600; color: var(--ink2); white-space: nowrap; }
+  .pips-count { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
 
   /* ── Submit btn ── */
   .submit-wrap { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
@@ -316,19 +315,19 @@
     border-radius: 12px;
     border: none;
     background: var(--accent);
-    color: white;
-    font-family: 'Fraunces', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
+    color: #0f0e11;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
   }
 
   .btn-submit:hover:not(:disabled) {
-    background: #b03d24;
+    background: #d9ff7a;
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(200,75,47,0.3);
+    box-shadow: 0 8px 24px rgba(200,240,100,0.3);
   }
 
   .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -337,9 +336,8 @@
   .empty {
     text-align: center;
     padding: 2rem 1rem;
-    color: var(--ink2);
+    color: var(--muted);
     font-size: 0.9rem;
-    font-style: italic;
   }
 
   /* ── Toast ── */
@@ -348,8 +346,9 @@
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: var(--ink);
-    color: white;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
     padding: 0.75rem 1.5rem;
     border-radius: 100px;
     font-size: 0.875rem;
@@ -357,11 +356,12 @@
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 100;
     white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
   }
 
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.error { background: var(--accent); }
-  .toast.success { background: var(--green); }
+  .toast.error { background: #2d1a1a; border-color: var(--danger); color: var(--danger); }
+  .toast.success { background: #162d22; border-color: var(--green); color: var(--green); }
 
   /* ── Admin ── */
   .admin-bar {
@@ -373,12 +373,12 @@
 
   .admin-toggle {
     font-size: 0.75rem;
-    color: var(--ink2);
+    color: var(--muted);
     background: none;
     border: none;
     cursor: pointer;
     text-decoration: underline;
-    font-family: 'Instrument Sans', sans-serif;
+    font-family: 'DM Sans', sans-serif;
   }
 
   .admin-panel {
@@ -413,40 +413,42 @@
     gap: 1rem;
     padding: 0.9rem 1rem;
     border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
     animation: slideIn 0.3s ease both;
   }
 
   .result-item.winner {
-    border-color: var(--gold);
-    background: #fffbf0;
+    border-color: rgba(245,200,66,0.4);
+    background: rgba(245,200,66,0.06);
   }
 
   .result-rank {
-    font-family: 'Fraunces', serif;
+    font-family: 'Syne', sans-serif;
     font-size: 0.85rem;
-    font-weight: 900;
-    color: var(--ink2);
+    font-weight: 700;
+    color: var(--muted);
     min-width: 24px;
   }
 
   .result-rank.first { color: var(--gold); }
 
-  .result-name { flex: 1; font-size: 0.95rem; font-weight: 500; }
+  .result-name { flex: 1; font-size: 0.95rem; font-weight: 400; color: var(--text); }
 
-  .result-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .result-bar { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.6s ease; }
+  .result-bar-wrap { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .result-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.6s ease; }
   .result-item.winner .result-bar { background: var(--gold); }
 
   .result-votes {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--ink);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--accent);
     min-width: 55px;
     text-align: right;
   }
+
+  .result-item.winner .result-votes { color: var(--gold); }
 
   /* ── Success ── */
   .success-state {
@@ -457,7 +459,7 @@
   .success-icon {
     width: 56px; height: 56px;
     border-radius: 50%;
-    background: var(--green-light);
+    background: rgba(93,235,176,0.1);
     border: 2px solid var(--green);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.5rem;
@@ -468,13 +470,13 @@
   @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
   .success-state h2 {
-    font-family: 'Fraunces', serif;
+    font-family: 'Syne', sans-serif;
     font-size: 1.4rem;
-    font-weight: 900;
+    font-weight: 800;
     margin-bottom: 0.4rem;
   }
 
-  .success-state p { color: var(--ink2); font-size: 0.9rem; }
+  .success-state p { color: var(--muted); font-size: 0.9rem; }
 
   /* Closed phase */
   .closed-msg {
@@ -483,21 +485,20 @@
   }
 
   .closed-msg .big {
-    font-family: 'Fraunces', serif;
     font-size: 3rem;
-    font-weight: 900;
     line-height: 1;
     margin-bottom: 0.5rem;
   }
 
-  .closed-msg p { color: var(--ink2); font-size: 0.9rem; }
+  .closed-msg h2 { font-family: 'Syne', sans-serif; font-weight: 800; }
+  .closed-msg p { color: var(--muted); font-size: 0.9rem; }
 
   /* Loading spinner */
   .spinner {
     display: inline-block;
     width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #0f0e11;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
     vertical-align: middle;
@@ -544,7 +545,7 @@
 // ═══════════════════════════════════════════════════
 //  CONFIGURATION — edit these values
 // ═══════════════════════════════════════════════════
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbx9G9oPdh8aYballUBW1Bnx5dhKP79ZDvOdc69D2UVni3dZZ_sh0TLE23vqu1siTevq/exec"; // paste your Apps Script web app URL
+const SHEET_URL = "https://script.google.com/macros/s/AKfycby8UErS82ZmnSqigaBkJVKJzmATDWqCPZrgzWXu6X9mDwo1XH11OlmcGV-mKdHPS_5Y/exec"; // paste your Apps Script web app URL
 const ADMIN_PASSWORD = "abc123";
 const TOTAL_VOTES = 5;
 const MAX_OPTIONS_PER_USER = 2;
@@ -632,9 +633,9 @@ function formatCountdown(ms) {
 }
 
 // ── API calls ──
-// Google Apps Script blocks CORS on POST responses, so:
-//   - Writes (addOption, submitVotes): use no-cors POST (fire-and-forget, assume success)
-//   - Reads (getOptions, getResults):  use GET with URL params (Apps Script allows this)
+// Google Apps Script CORS workaround:
+//   - Reads: JSONP via dynamic <script> tag (bypasses CORS entirely)
+//   - Writes: POST no-cors with no Content-Type header (avoids preflight), assume success
 async function apiCall(action, payload = {}) {
   if (!SHEET_URL || SHEET_URL === "YOUR_APPS_SCRIPT_URL_HERE") {
     return { success: true, demo: true };
@@ -644,26 +645,57 @@ async function apiCall(action, payload = {}) {
 
   try {
     if (isRead) {
-      // GET request — Apps Script returns JSON fine for GETs
       const url = new URL(SHEET_URL);
       url.searchParams.set("action", action);
-      Object.entries(payload).forEach(([k, v]) => url.searchParams.set(k, typeof v === "object" ? JSON.stringify(v) : v));
-      const res = await fetch(url.toString());
-      return await res.json();
+      Object.entries(payload).forEach(([k, v]) =>
+        url.searchParams.set(k, typeof v === "object" ? JSON.stringify(v) : v)
+      );
+      return await fetchViaJSONP(url.toString());
     } else {
-      // POST with no-cors — we can't read the response, but it still hits the server
+      // Fire-and-forget POST — no-cors, no Content-Type = no preflight
       await fetch(SHEET_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "text/plain" }, // text/plain avoids preflight
         body: JSON.stringify({ action, ...payload })
       });
-      // Since no-cors returns an opaque response, assume success and move on
       return { success: true };
     }
   } catch(e) {
     return { success: false, error: e.message };
   }
+}
+
+// JSONP: injects a <script> tag so the request bypasses CORS entirely
+function fetchViaJSONP(url) {
+  return new Promise((resolve) => {
+    const cbName = "_jsonp_" + Date.now();
+    const scriptId = "jsonp_script_" + cbName;
+
+    window[cbName] = (data) => {
+      delete window[cbName];
+      document.getElementById(scriptId)?.remove();
+      resolve(data);
+    };
+
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.src = url + "&callback=" + cbName;
+    script.onerror = () => {
+      delete window[cbName];
+      script.remove();
+      resolve({ success: true, options: [], results: [] });
+    };
+    document.head.appendChild(script);
+
+    // 8s timeout fallback
+    setTimeout(() => {
+      if (window[cbName]) {
+        delete window[cbName];
+        document.getElementById(scriptId)?.remove();
+        resolve({ success: true, options: [], results: [] });
+      }
+    }, 8000);
+  });
 }
 
 async function fetchOptions() {
@@ -735,7 +767,7 @@ function renderSubmissionPhase(content) {
     <div class="card">
       <div class="card-header">
         <span class="card-title">Suggest an Option</span>
-        <span style="font-size:0.8rem;color:var(--ink2)">${remaining} suggestion${remaining !== 1 ? 's' : ''} left</span>
+        <span style="font-size:0.8rem;color:var(--muted)">${remaining} suggestion${remaining !== 1 ? 's' : ''} left</span>
       </div>
       <div class="card-body">
         <div class="input-row">
@@ -744,14 +776,14 @@ function renderSubmissionPhase(content) {
             onkeydown="if(event.key==='Enter') addOption()" />
           <button class="btn-primary" onclick="addOption()" ${remaining === 0 ? 'disabled' : ''}>Add</button>
         </div>
-        ${remaining === 0 ? '<p style="font-size:0.8rem;color:var(--ink2);margin-top:0.75rem">You\'ve used all your suggestions for today.</p>' : ''}
+        ${remaining === 0 ? '<p style="font-size:0.8rem;color:var(--muted);margin-top:0.75rem">You\'ve used all your suggestions for today.</p>' : ''}
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <span class="card-title">All Suggestions</span>
-        <span style="font-size:0.8rem;color:var(--ink2)">${options.length} so far</span>
+        <span style="font-size:0.8rem;color:var(--muted)">${options.length} so far</span>
       </div>
       <div class="card-body">
         <div class="options-list" id="options-list">
@@ -766,7 +798,7 @@ function renderSubmissionPhase(content) {
       </div>
     </div>
 
-    <p style="text-align:center;font-size:0.8rem;color:var(--ink2);margin-top:0.5rem">
+    <p style="text-align:center;font-size:0.8rem;color:var(--muted);margin-top:0.5rem">
       Voting opens at ${VOTING_START_HOUR > 12 ? VOTING_START_HOUR - 12 : VOTING_START_HOUR}:00 ${VOTING_START_HOUR >= 12 ? 'PM' : 'AM'} ET
     </p>
   `;
@@ -832,7 +864,7 @@ function renderClosedPhase(content) {
     <div class="card">
       <div class="closed-msg">
         <div class="big">🔒</div>
-        <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;margin-bottom:0.5rem">Submissions Closed</h2>
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:0.5rem">Submissions Closed</h2>
         <p>Today's voting has ended. Check back tomorrow!</p>
       </div>
     </div>
@@ -854,7 +886,7 @@ async function renderResults(container, append = false) {
     <div class="card" style="margin-top:1.25rem">
       <div class="card-header">
         <span class="card-title">Results</span>
-        <span style="font-size:0.8rem;color:var(--ink2)">${results.reduce((a,b)=>a+b.votes,0)} total votes</span>
+        <span style="font-size:0.8rem;color:var(--muted)">${results.reduce((a,b)=>a+b.votes,0)} total votes</span>
       </div>
       <div class="card-body">
         <div class="results-list">
@@ -987,8 +1019,8 @@ function adminLogin() {
   if (pw === ADMIN_PASSWORD) {
     isAdmin = true;
     document.getElementById("admin-panel").innerHTML = `
-      <p style="font-size:0.8rem;color:var(--green);font-weight:600;margin-bottom:0.75rem">✓ Admin mode active</p>
-      <button class="btn-primary" onclick="revealResults()" style="background:var(--gold);border:none">Reveal Results</button>
+      <p style="font-size:0.8rem;color:var(--green);font-weight:700;margin-bottom:0.75rem">✓ Admin mode active</p>
+      <button class="btn-primary" onclick="revealResults()" style="background:var(--gold);color:#0f0e11;border:none;font-family:'Syne',sans-serif;font-weight:700">Reveal Results</button>
     `;
     showToast("Admin access granted", "success");
   } else {
