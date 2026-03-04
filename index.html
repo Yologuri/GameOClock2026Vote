@@ -5,34 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Game O'Clock</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=Instrument+Sans:wght@400;500;600&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0f0e11;
-    --surface: #1a1820;
-    --border: #2e2b38;
-    --accent: #c8f064;
-    --accent2: #7c6af5;
-    --text: #f0ecff;
-    --muted: #7a7589;
-    --danger: #ff6b6b;
-    --gold: #f5c842;
-    --green: #5debb0;
+    --bg: #faf7f2;
+    --surface: #ffffff;
+    --ink: #1a1612;
+    --ink2: #6b6560;
+    --border: #e8e3db;
+    --accent: #c84b2f;
+    --accent-light: #fdf0ed;
+    --gold: #d4a843;
+    --green: #2d7a4f;
+    --green-light: #edf7f2;
   }
 
   body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Instrument Sans', sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--ink);
     min-height: 100vh;
     padding: 2rem 1rem 4rem;
-    background-image: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(124,106,245,0.15) 0%, transparent 70%);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(200,75,47,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(212,168,67,0.06) 0%, transparent 50%);
   }
 
   .container {
-    max-width: 540px;
+    max-width: 580px;
     margin: 0 auto;
   }
 
@@ -40,7 +42,7 @@
   .masthead {
     text-align: center;
     padding: 2.5rem 0 2rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--ink);
     margin-bottom: 2rem;
     position: relative;
   }
@@ -50,18 +52,17 @@
     align-items: center;
     gap: 6px;
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 4px 12px;
     border-radius: 100px;
     margin-bottom: 1rem;
-    font-family: 'Syne', sans-serif;
   }
 
-  .phase-tag.submission { background: rgba(245,200,66,0.12); color: var(--gold); border: 1px solid rgba(245,200,66,0.4); }
-  .phase-tag.voting { background: rgba(200,240,100,0.1); color: var(--accent); border: 1px solid rgba(200,240,100,0.4); }
-  .phase-tag.closed { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+  .phase-tag.submission { background: #fff8e6; color: var(--gold); border: 1px solid var(--gold); }
+  .phase-tag.voting { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); }
+  .phase-tag.closed { background: #f0f0f0; color: #888; border: 1px solid #ccc; }
 
   .phase-dot {
     width: 6px; height: 6px;
@@ -76,17 +77,19 @@
   }
 
   h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2rem, 6vw, 2.75rem);
-    font-weight: 800;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 900;
     line-height: 1;
     letter-spacing: -0.02em;
-    color: var(--text);
   }
 
   .subtitle {
-    font-size: 0.9rem;
-    color: var(--muted);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1rem;
+    color: var(--ink2);
     margin-top: 0.4rem;
   }
 
@@ -96,22 +99,22 @@
     gap: 6px;
     margin-top: 1rem;
     font-size: 0.8rem;
-    color: var(--muted);
-    background: rgba(255,255,255,0.04);
+    color: var(--ink2);
+    background: var(--surface);
     border: 1px solid var(--border);
     padding: 6px 14px;
     border-radius: 100px;
   }
 
-  .countdown strong { color: var(--accent); font-weight: 600; }
+  .countdown strong { color: var(--ink); font-weight: 600; }
 
   /* ── Card ── */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 20px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+    box-shadow: 0 2px 20px rgba(26,22,18,0.06);
     margin-bottom: 1.25rem;
   }
 
@@ -121,14 +124,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(255,255,255,0.02);
   }
 
   .card-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 600;
   }
 
   .card-body { padding: 1.5rem; }
@@ -144,45 +145,45 @@
     padding: 0.75rem 1rem;
     border: 1.5px solid var(--border);
     border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Instrument Sans', sans-serif;
     font-size: 0.95rem;
-    color: var(--text);
-    background: rgba(255,255,255,0.04);
+    color: var(--ink);
+    background: var(--bg);
     outline: none;
     transition: border-color 0.15s;
   }
 
-  input[type="text"]:focus { border-color: var(--accent); }
-  input[type="text"]::placeholder { color: var(--muted); }
-  input[type="text"]:disabled { opacity: 0.4; cursor: not-allowed; }
+  input[type="text"]:focus { border-color: var(--ink); }
+  input[type="text"]::placeholder { color: #b0a99f; }
+  input[type="text"]:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .btn-primary {
     padding: 0.75rem 1.25rem;
     border-radius: 10px;
     border: none;
-    background: var(--accent);
-    color: #0f0e11;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 700;
+    background: var(--ink);
+    color: white;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.15s;
   }
 
   .btn-primary:hover:not(:disabled) {
-    background: #d9ff7a;
+    background: #2e2820;
     transform: translateY(-1px);
   }
 
-  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
   .remaining-badge {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     font-size: 0.75rem;
-    color: var(--muted);
+    color: var(--ink2);
     margin-top: 0.75rem;
   }
 
@@ -203,9 +204,9 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.9rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.02);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
     transition: border-color 0.2s, background 0.2s;
     animation: slideIn 0.25s ease;
   }
@@ -216,23 +217,22 @@
   }
 
   .option-item.has-votes {
-    border-color: rgba(200,240,100,0.3);
-    background: rgba(200,240,100,0.04);
+    border-color: rgba(200,75,47,0.3);
+    background: var(--accent-light);
   }
 
   .option-number {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Fraunces', serif;
     font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--muted);
+    font-weight: 600;
+    color: var(--ink2);
     min-width: 20px;
   }
 
   .option-name {
     flex: 1;
     font-size: 0.95rem;
-    font-weight: 400;
-    color: var(--text);
+    font-weight: 500;
   }
 
   .vote-counter {
@@ -245,9 +245,9 @@
   .vcbtn {
     width: 30px; height: 30px;
     border-radius: 7px;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.05);
-    color: var(--text);
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--ink);
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -257,20 +257,20 @@
     user-select: none;
   }
 
-  .vcbtn:hover:not(:disabled) { border-color: var(--accent); background: rgba(200,240,100,0.12); color: var(--accent); transform: scale(1.08); }
+  .vcbtn:hover:not(:disabled) { border-color: var(--ink); background: var(--ink); color: white; transform: scale(1.08); }
   .vcbtn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
 
   .vcount {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Fraunces', serif;
     font-size: 1.1rem;
-    font-weight: 700;
+    font-weight: 600;
     min-width: 22px;
     text-align: center;
     color: var(--accent);
     transition: transform 0.15s;
   }
 
-  .vcount.zero { color: var(--muted); }
+  .vcount.zero { color: var(--ink2); }
 
   /* ── Vote pips ── */
   .pips-row {
@@ -279,13 +279,14 @@
     gap: 0.75rem;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border);
+    background: #fdfcfa;
   }
 
-  .pips-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; font-family: 'Syne', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+  .pips-label { font-size: 0.75rem; color: var(--ink2); font-weight: 500; }
 
   .pips {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     flex: 1;
   }
 
@@ -293,18 +294,18 @@
     width: 26px; height: 26px;
     border-radius: 50%;
     border: 2px solid var(--border);
-    background: transparent;
+    background: white;
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .pip.filled {
     background: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 12px rgba(200,240,100,0.4);
-    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(200,75,47,0.35);
+    transform: scale(1.12);
   }
 
-  .pips-count { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+  .pips-count { font-size: 0.8rem; font-weight: 600; color: var(--ink2); white-space: nowrap; }
 
   /* ── Submit btn ── */
   .submit-wrap { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
@@ -315,19 +316,19 @@
     border-radius: 12px;
     border: none;
     background: var(--accent);
-    color: #0f0e11;
-    font-family: 'Syne', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
+    color: white;
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
   }
 
   .btn-submit:hover:not(:disabled) {
-    background: #d9ff7a;
+    background: #b03d24;
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(200,240,100,0.3);
+    box-shadow: 0 6px 20px rgba(200,75,47,0.3);
   }
 
   .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -336,8 +337,9 @@
   .empty {
     text-align: center;
     padding: 2rem 1rem;
-    color: var(--muted);
+    color: var(--ink2);
     font-size: 0.9rem;
+    font-style: italic;
   }
 
   /* ── Toast ── */
@@ -346,9 +348,8 @@
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
+    background: var(--ink);
+    color: white;
     padding: 0.75rem 1.5rem;
     border-radius: 100px;
     font-size: 0.875rem;
@@ -356,12 +357,11 @@
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 100;
     white-space: nowrap;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
   }
 
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.error { background: #2d1a1a; border-color: var(--danger); color: var(--danger); }
-  .toast.success { background: #162d22; border-color: var(--green); color: var(--green); }
+  .toast.error { background: var(--accent); }
+  .toast.success { background: var(--green); }
 
   /* ── Admin ── */
   .admin-bar {
@@ -373,12 +373,12 @@
 
   .admin-toggle {
     font-size: 0.75rem;
-    color: var(--muted);
+    color: var(--ink2);
     background: none;
     border: none;
     cursor: pointer;
     text-decoration: underline;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Instrument Sans', sans-serif;
   }
 
   .admin-panel {
@@ -413,42 +413,40 @@
     gap: 1rem;
     padding: 0.9rem 1rem;
     border: 1px solid var(--border);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    background: var(--bg);
     animation: slideIn 0.3s ease both;
   }
 
   .result-item.winner {
-    border-color: rgba(245,200,66,0.4);
-    background: rgba(245,200,66,0.06);
+    border-color: var(--gold);
+    background: #fffbf0;
   }
 
   .result-rank {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Fraunces', serif;
     font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--muted);
+    font-weight: 900;
+    color: var(--ink2);
     min-width: 24px;
   }
 
   .result-rank.first { color: var(--gold); }
 
-  .result-name { flex: 1; font-size: 0.95rem; font-weight: 400; color: var(--text); }
+  .result-name { flex: 1; font-size: 0.95rem; font-weight: 500; }
 
-  .result-bar-wrap { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .result-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.6s ease; }
+  .result-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .result-bar { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.6s ease; }
   .result-item.winner .result-bar { background: var(--gold); }
 
   .result-votes {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: var(--accent);
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
     min-width: 55px;
     text-align: right;
   }
-
-  .result-item.winner .result-votes { color: var(--gold); }
 
   /* ── Success ── */
   .success-state {
@@ -459,7 +457,7 @@
   .success-icon {
     width: 56px; height: 56px;
     border-radius: 50%;
-    background: rgba(93,235,176,0.1);
+    background: var(--green-light);
     border: 2px solid var(--green);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.5rem;
@@ -470,13 +468,13 @@
   @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
   .success-state h2 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Fraunces', serif;
     font-size: 1.4rem;
-    font-weight: 800;
+    font-weight: 900;
     margin-bottom: 0.4rem;
   }
 
-  .success-state p { color: var(--muted); font-size: 0.9rem; }
+  .success-state p { color: var(--ink2); font-size: 0.9rem; }
 
   /* Closed phase */
   .closed-msg {
@@ -485,20 +483,21 @@
   }
 
   .closed-msg .big {
+    font-family: 'Fraunces', serif;
     font-size: 3rem;
+    font-weight: 900;
     line-height: 1;
     margin-bottom: 0.5rem;
   }
 
-  .closed-msg h2 { font-family: 'Syne', sans-serif; font-weight: 800; }
-  .closed-msg p { color: var(--muted); font-size: 0.9rem; }
+  .closed-msg p { color: var(--ink2); font-size: 0.9rem; }
 
   /* Loading spinner */
   .spinner {
     display: inline-block;
     width: 16px; height: 16px;
-    border: 2px solid rgba(0,0,0,0.2);
-    border-top-color: #0f0e11;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
     vertical-align: middle;
@@ -545,7 +544,7 @@
 // ═══════════════════════════════════════════════════
 //  CONFIGURATION — edit these values
 // ═══════════════════════════════════════════════════
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbykdd-WSacW84M5Z1Y-kLXoRxpSBjQSLB3Z264G7HAVxw1_OPvIPXp2pbW2EG-5XtQy/exec"; // paste your Apps Script web app URL
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxqF1QOFfgfxh2oHryM8MBjV9cSOChbr53279HnqFAo5oPhMWZNP9VR6OKx9E66b_Dv/exec"; // paste your Apps Script web app URL
 const ADMIN_PASSWORD = "abc123";
 const TOTAL_VOTES = 5;
 const MAX_OPTIONS_PER_USER = 2;
@@ -767,7 +766,7 @@ function renderSubmissionPhase(content) {
     <div class="card">
       <div class="card-header">
         <span class="card-title">Suggest an Option</span>
-        <span style="font-size:0.8rem;color:var(--muted)">${remaining} suggestion${remaining !== 1 ? 's' : ''} left</span>
+        <span style="font-size:0.8rem;color:var(--ink2)">${remaining} suggestion${remaining !== 1 ? 's' : ''} left</span>
       </div>
       <div class="card-body">
         <div class="input-row">
@@ -776,14 +775,14 @@ function renderSubmissionPhase(content) {
             onkeydown="if(event.key==='Enter') addOption()" />
           <button class="btn-primary" onclick="addOption()" ${remaining === 0 ? 'disabled' : ''}>Add</button>
         </div>
-        ${remaining === 0 ? '<p style="font-size:0.8rem;color:var(--muted);margin-top:0.75rem">You\'ve used all your suggestions for today.</p>' : ''}
+        ${remaining === 0 ? '<p style="font-size:0.8rem;color:var(--ink2);margin-top:0.75rem">You\'ve used all your suggestions for today.</p>' : ''}
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <span class="card-title">All Suggestions</span>
-        <span style="font-size:0.8rem;color:var(--muted)">${options.length} so far</span>
+        <span style="font-size:0.8rem;color:var(--ink2)">${options.length} so far</span>
       </div>
       <div class="card-body">
         <div class="options-list" id="options-list">
@@ -798,7 +797,7 @@ function renderSubmissionPhase(content) {
       </div>
     </div>
 
-    <p style="text-align:center;font-size:0.8rem;color:var(--muted);margin-top:0.5rem">
+    <p style="text-align:center;font-size:0.8rem;color:var(--ink2);margin-top:0.5rem">
       Voting opens at ${VOTING_START_HOUR > 12 ? VOTING_START_HOUR - 12 : VOTING_START_HOUR}:00 ${VOTING_START_HOUR >= 12 ? 'PM' : 'AM'} ET
     </p>
   `;
@@ -864,7 +863,7 @@ function renderClosedPhase(content) {
     <div class="card">
       <div class="closed-msg">
         <div class="big">🔒</div>
-        <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:0.5rem">Submissions Closed</h2>
+        <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;margin-bottom:0.5rem">Submissions Closed</h2>
         <p>Today's voting has ended. Check back tomorrow!</p>
       </div>
     </div>
@@ -886,7 +885,7 @@ async function renderResults(container, append = false) {
     <div class="card" style="margin-top:1.25rem">
       <div class="card-header">
         <span class="card-title">Results</span>
-        <span style="font-size:0.8rem;color:var(--muted)">${results.reduce((a,b)=>a+b.votes,0)} total votes</span>
+        <span style="font-size:0.8rem;color:var(--ink2)">${results.reduce((a,b)=>a+b.votes,0)} total votes</span>
       </div>
       <div class="card-body">
         <div class="results-list">
@@ -932,7 +931,7 @@ async function addOption() {
     showToast("Suggestion added!", "success");
     render();
   } else {
-    showToast(res.error || "Couldn't save — try again", "error");
+    showToast("Couldn't save — try again", "error");
     input.disabled = false;
     btn.disabled = false;
     btn.textContent = "Add";
@@ -1003,7 +1002,7 @@ async function submitVotes() {
     showToast("Votes submitted!", "success");
     render();
   } else {
-    showToast(res.error || "Couldn't submit — try again", "error");
+    showToast("Couldn't submit — try again", "error");
     btn.disabled = false;
     btn.textContent = "Submit My Votes";
   }
@@ -1019,8 +1018,8 @@ function adminLogin() {
   if (pw === ADMIN_PASSWORD) {
     isAdmin = true;
     document.getElementById("admin-panel").innerHTML = `
-      <p style="font-size:0.8rem;color:var(--green);font-weight:700;margin-bottom:0.75rem">✓ Admin mode active</p>
-      <button class="btn-primary" onclick="revealResults()" style="background:var(--gold);color:#0f0e11;border:none;font-family:'Syne',sans-serif;font-weight:700">Reveal Results</button>
+      <p style="font-size:0.8rem;color:var(--green);font-weight:600;margin-bottom:0.75rem">✓ Admin mode active</p>
+      <button class="btn-primary" onclick="revealResults()" style="background:var(--gold);border:none">Reveal Results</button>
     `;
     showToast("Admin access granted", "success");
   } else {
