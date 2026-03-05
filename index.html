@@ -505,6 +505,204 @@
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Mystery Card Reward ── */
+  .reward-section {
+    text-align: center;
+    padding: 2rem 1.5rem 2.5rem;
+  }
+
+  .reward-section h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+
+  .reward-section .reward-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 1.75rem;
+  }
+
+  .mystery-card-scene {
+    perspective: 600px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .mystery-card {
+    width: 140px;
+    height: 196px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: cardSpin 3s ease-in-out infinite;
+  }
+
+  .mystery-card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border: 2px solid rgba(124,106,245,0.5);
+    overflow: hidden;
+  }
+
+  .mystery-card-front {
+    background: linear-gradient(145deg, #1e1b2e 0%, #2a2540 50%, #1e1b2e 100%);
+    box-shadow:
+      0 8px 32px rgba(124,106,245,0.3),
+      0 0 60px rgba(124,106,245,0.1),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  .mystery-card-front::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(124,106,245,0.15) 45%,
+      rgba(200,240,100,0.12) 50%,
+      rgba(245,200,66,0.1) 55%,
+      transparent 70%
+    );
+    background-size: 200% 200%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  .mystery-card-front::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(124,106,245,0.25);
+    border-radius: 8px;
+    pointer-events: none;
+  }
+
+  .mystery-card-back {
+    background: linear-gradient(145deg, #252040 0%, #1a1630 50%, #252040 100%);
+    transform: rotateY(180deg);
+    box-shadow:
+      0 8px 32px rgba(124,106,245,0.3),
+      0 0 60px rgba(124,106,245,0.1);
+  }
+
+  .mystery-card-back::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 8px,
+      rgba(124,106,245,0.06) 8px,
+      rgba(124,106,245,0.06) 16px
+    );
+  }
+
+  .mystery-card-back::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(124,106,245,0.2);
+    border-radius: 8px;
+  }
+
+  .mystery-qmark {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(180deg, var(--accent2) 0%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 12px rgba(124,106,245,0.5));
+    animation: qPulse 2s ease-in-out infinite;
+  }
+
+  .mystery-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(124,106,245,0.7);
+    margin-top: 0.25rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .mystery-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .mystery-stars .star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--accent2);
+    border-radius: 50%;
+    opacity: 0;
+    animation: starTwinkle 2s ease-in-out infinite;
+  }
+
+  .mystery-stars .star:nth-child(1) { top: 18%; left: 22%; animation-delay: 0s; }
+  .mystery-stars .star:nth-child(2) { top: 30%; right: 20%; animation-delay: 0.5s; }
+  .mystery-stars .star:nth-child(3) { bottom: 28%; left: 18%; animation-delay: 1s; }
+  .mystery-stars .star:nth-child(4) { bottom: 18%; right: 24%; animation-delay: 1.4s; }
+  .mystery-stars .star:nth-child(5) { top: 50%; left: 12%; animation-delay: 0.7s; }
+
+  @keyframes cardSpin {
+    0%, 100% { transform: rotateY(0deg); }
+    25% { transform: rotateY(10deg) scale(1.02); }
+    50% { transform: rotateY(180deg); }
+    75% { transform: rotateY(170deg) scale(1.02); }
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: -100% -100%; }
+    50% { background-position: 200% 200%; }
+  }
+
+  @keyframes qPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  @keyframes starTwinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+  }
+
+  .reward-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--accent2);
+    background: rgba(124,106,245,0.08);
+    border: 1px solid rgba(124,106,245,0.25);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
 </style>
 </head>
 <body>
@@ -814,6 +1012,7 @@ function renderVotingPhase(content) {
           <p>Results will be revealed by the organizer.</p>
         </div>
       </div>`;
+    renderRewardCard(content);
     return;
   }
 
@@ -871,6 +1070,7 @@ function renderClosedPhase(content) {
   `;
 
   renderResults(content, true);
+  renderRewardCard(content);
 }
 
 async function renderResults(container, append = false) {
@@ -905,6 +1105,38 @@ async function renderResults(container, append = false) {
   } else {
     container.innerHTML = html;
   }
+}
+
+// ── Reward Card ──
+function renderRewardCard(container) {
+  const html = `
+    <div class="card" style="margin-top:1.25rem">
+      <div class="reward-section">
+        <h3>Mystery Reward</h3>
+        <p class="reward-subtitle">All players who finish the winning games unlock this prize</p>
+        <div class="mystery-card-scene">
+          <div class="mystery-card">
+            <div class="mystery-card-face mystery-card-front">
+              <div class="mystery-stars">
+                <span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span>
+              </div>
+              <span class="mystery-qmark">?</span>
+              <span class="mystery-label">Mystery</span>
+            </div>
+            <div class="mystery-card-face mystery-card-back">
+              <div class="mystery-stars">
+                <span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span>
+              </div>
+              <span class="mystery-qmark">?</span>
+              <span class="mystery-label">Reward</span>
+            </div>
+          </div>
+        </div>
+        <span class="reward-cta">✨ Play to find out</span>
+      </div>
+    </div>
+  `;
+  container.insertAdjacentHTML('beforeend', html);
 }
 
 // ── Actions ──
