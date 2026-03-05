@@ -872,6 +872,21 @@
     color: var(--green);
   }
 
+  .game-check-item.tied:not(.completed) {
+    border-style: dashed;
+    opacity: 0.75;
+  }
+
+  .tied-games-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 1rem 0 0.5rem 0.25rem;
+  }
+
   .participants-progress {
     display: flex;
     align-items: center;
@@ -1569,26 +1584,31 @@ async function renderParticipantsTab(container) {
   if (!container) return;
   const p = loadParticipant();
 
-  // Filter to top 12 games by votes (keeping ties)
+  // Filter to top 12 games by votes (keeping ties as optional picks)
+  const COMPLETION_GOAL = 12;
   let gameList = options.length > 0 ? [...options] : [];
+  let requiredGames = [];
+  let tiedGames = [];
   try {
     const results = await fetchResults();
     if (results && results.length > 0) {
       results.sort((a, b) => b.votes - a.votes);
       if (results.length > 12) {
         const cutoffVotes = results[11].votes;
-        const top = results.filter(r => r.votes >= cutoffVotes);
-        gameList = top.map(r => r.name);
+        requiredGames = results.filter(r => r.votes > cutoffVotes).map(r => r.name);
+        tiedGames = results.filter(r => r.votes === cutoffVotes).map(r => r.name);
+        gameList = [...requiredGames, ...tiedGames];
       } else {
-        gameList = results.map(r => r.name);
+        requiredGames = results.map(r => r.name);
+        gameList = [...requiredGames];
       }
     }
   } catch (e) {
     // Fall back to full options list on error
   }
   const totalGames = gameList.length;
-  const myCompleted = p.completedGames.filter(g => gameList.includes(g)).length;
-  const myPct = totalGames > 0 ? Math.round((myCompleted / totalGames) * 100) : 0;
+  const myCompleted = Math.min(p.completedGames.filter(g => gameList.includes(g)).length, COMPLETION_GOAL);
+  const myPct = COMPLETION_GOAL > 0 ? Math.min(Math.round((myCompleted / COMPLETION_GOAL) * 100), 100) : 0;
 
   // Gamertag input / display
   const gamertagSection = p.gamertag
@@ -1603,15 +1623,28 @@ async function renderParticipantsTab(container) {
       </div>`;
 
   // Game checklist (only shown when gamertag is set)
+  const tiedLabel = tiedGames.length > 0
+    ? `<div class="tied-games-label">Tied — complete any to reach ${COMPLETION_GOAL}</div>`
+    : '';
   const checklistHtml = gameList.length === 0
     ? '<div class="empty">No games to track yet.</div>'
-    : gameList.map(name => {
+    : requiredGames.map(name => {
         const done = p.completedGames.includes(name);
         return `
           <div class="game-check-item ${done ? 'completed' : ''}" onclick="toggleGameCompletion('${escHtml(name).replace(/'/g, "\\'")}')">
             <div class="game-check-box">${done ? '✓' : ''}</div>
             <span class="game-check-name">${escHtml(name)}</span>
-            <span class="game-check-status">${done ? 'Done' : 'Not yet'}</span>
+            <span class="game-check-status">${done ? 'Done' : 'Required'}</span>
+          </div>`;
+      }).join('')
+      + tiedLabel
+      + tiedGames.map(name => {
+        const done = p.completedGames.includes(name);
+        return `
+          <div class="game-check-item tied ${done ? 'completed' : ''}" onclick="toggleGameCompletion('${escHtml(name).replace(/'/g, "\\'")}')">
+            <div class="game-check-box">${done ? '✓' : ''}</div>
+            <span class="game-check-name">${escHtml(name)}</span>
+            <span class="game-check-status">${done ? 'Done' : 'Optional'}</span>
           </div>`;
       }).join('');
 
@@ -1627,7 +1660,8 @@ async function renderParticipantsTab(container) {
     ? '<div class="empty">No players yet — be the first to join!</div>'
     : sortedPlayers.map(pl => {
         const isYou = pl.gamertag === p.gamertag && p.gamertag;
-        const pct = totalGames > 0 ? Math.round((pl.count / totalGames) * 100) : 0;
+        const cappedCount = Math.min(pl.count, COMPLETION_GOAL);
+        const pct = COMPLETION_GOAL > 0 ? Math.min(Math.round((cappedCount / COMPLETION_GOAL) * 100), 100) : 0;
         const initial = pl.gamertag.charAt(0);
         return `
           <div class="roster-item ${isYou ? 'is-you' : ''}">
@@ -1638,7 +1672,7 @@ async function renderParticipantsTab(container) {
             </div>
             <div class="roster-progress">
               <div class="roster-bar"><div class="roster-bar-fill" style="width:${pct}%"></div></div>
-              <span class="roster-count">${pl.count}/${totalGames}</span>
+              <span class="roster-count">${cappedCount}/${COMPLETION_GOAL}</span>
             </div>
           </div>`;
       }).join('');
@@ -1652,7 +1686,7 @@ async function renderParticipantsTab(container) {
         ${gamertagSection}
         ${p.gamertag ? `<div class="participants-progress">
           <div class="prog-bar"><div class="prog-fill" style="width:${myPct}%"></div></div>
-          <span class="prog-text">${myCompleted}/${totalGames}</span>
+          <span class="prog-text">${myCompleted}/${COMPLETION_GOAL}</span>
         </div>` : '<p style="font-size:0.8rem;color:var(--muted)">Set your gamertag to join the player list.</p>'}
       </div>
     </div>
