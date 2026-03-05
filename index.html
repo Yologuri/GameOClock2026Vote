@@ -872,6 +872,21 @@
     color: var(--green);
   }
 
+  .game-check-item.tied:not(.completed) {
+    border-style: dashed;
+    opacity: 0.75;
+  }
+
+  .tied-games-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 1rem 0 0.5rem 0.25rem;
+  }
+
   .participants-progress {
     display: flex;
     align-items: center;
@@ -1569,19 +1584,23 @@ async function renderParticipantsTab(container) {
   if (!container) return;
   const p = loadParticipant();
 
-  // Filter to top 12 games by votes (keeping ties)
+  // Filter to top 12 games by votes (keeping ties as optional picks)
   const COMPLETION_GOAL = 12;
   let gameList = options.length > 0 ? [...options] : [];
+  let requiredGames = [];
+  let tiedGames = [];
   try {
     const results = await fetchResults();
     if (results && results.length > 0) {
       results.sort((a, b) => b.votes - a.votes);
       if (results.length > 12) {
         const cutoffVotes = results[11].votes;
-        const top = results.filter(r => r.votes >= cutoffVotes);
-        gameList = top.map(r => r.name);
+        requiredGames = results.filter(r => r.votes > cutoffVotes).map(r => r.name);
+        tiedGames = results.filter(r => r.votes === cutoffVotes).map(r => r.name);
+        gameList = [...requiredGames, ...tiedGames];
       } else {
-        gameList = results.map(r => r.name);
+        requiredGames = results.map(r => r.name);
+        gameList = [...requiredGames];
       }
     }
   } catch (e) {
@@ -1604,15 +1623,28 @@ async function renderParticipantsTab(container) {
       </div>`;
 
   // Game checklist (only shown when gamertag is set)
+  const tiedLabel = tiedGames.length > 0
+    ? `<div class="tied-games-label">Tied — complete any to reach ${COMPLETION_GOAL}</div>`
+    : '';
   const checklistHtml = gameList.length === 0
     ? '<div class="empty">No games to track yet.</div>'
-    : gameList.map(name => {
+    : requiredGames.map(name => {
         const done = p.completedGames.includes(name);
         return `
           <div class="game-check-item ${done ? 'completed' : ''}" onclick="toggleGameCompletion('${escHtml(name).replace(/'/g, "\\'")}')">
             <div class="game-check-box">${done ? '✓' : ''}</div>
             <span class="game-check-name">${escHtml(name)}</span>
-            <span class="game-check-status">${done ? 'Done' : 'Not yet'}</span>
+            <span class="game-check-status">${done ? 'Done' : 'Required'}</span>
+          </div>`;
+      }).join('')
+      + tiedLabel
+      + tiedGames.map(name => {
+        const done = p.completedGames.includes(name);
+        return `
+          <div class="game-check-item tied ${done ? 'completed' : ''}" onclick="toggleGameCompletion('${escHtml(name).replace(/'/g, "\\'")}')">
+            <div class="game-check-box">${done ? '✓' : ''}</div>
+            <span class="game-check-name">${escHtml(name)}</span>
+            <span class="game-check-status">${done ? 'Done' : 'Optional'}</span>
           </div>`;
       }).join('');
 
