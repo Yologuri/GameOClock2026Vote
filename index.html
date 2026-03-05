@@ -808,7 +808,6 @@ const TIMEZONE = "America/New_York"; // Eastern
 // Voting phase: starts at 6:00 PM ET, ends at 11:59 PM ET
 // After midnight: closed
 const VOTING_START_HOUR = 20; // 6 PM ET — change this if you want voting to start earlier/later
-const RESULTS_UNTIL_HOUR = 10; // Show previous night's results until 10 AM ET
 // ═══════════════════════════════════════════════════
 
 // ── State ──
@@ -821,7 +820,7 @@ let hasVoted = false;
 let hasSubmittedOptions = false;
 let isAdmin = false;
 let resultsRevealed = false;
-let phaseOverride = null;
+let phaseOverride = "closed"; // Force results view
 
 // ── Persistence (localStorage for per-user limits) ──
 const STORAGE_KEY = "voteboard_" + new Date().toLocaleDateString("en-CA", {timeZone: TIMEZONE});
@@ -855,12 +854,11 @@ function detectPhase() {
   const m = etNow.getMinutes();
   const totalMins = h * 60 + m;
   const votingStartMins = VOTING_START_HOUR * 60;
-  const resultsUntilMins = RESULTS_UNTIL_HOUR * 60;
+  const endMins = 23 * 60 + 59;
 
-  // After midnight but before RESULTS_UNTIL_HOUR: show last night's results
-  if (totalMins < resultsUntilMins) return "closed";
   if (totalMins < votingStartMins) return "submission";
-  return "voting";
+  if (totalMins <= endMins) return "voting";
+  return "closed";
 }
 
 function getPhaseEndTime() {
