@@ -1085,6 +1085,7 @@ let hasSubmittedOptions = false;
 let isAdmin = false;
 let resultsRevealed = false;
 let phaseOverride = "closed"; // Force results view
+let cachedResults = null;
 
 // ── Persistence (localStorage for per-user limits) ──
 const STORAGE_KEY = "voteboard_" + new Date().toLocaleDateString("en-CA", {timeZone: TIMEZONE});
@@ -1225,12 +1226,15 @@ async function fetchOptions() {
 }
 
 async function fetchResults() {
+  if (cachedResults) return cachedResults;
   const res = await apiCall("getResults");
   if (res.demo) {
-    // In demo mode, show mock results
     return options.map((o, i) => ({ name: o, votes: Math.floor(Math.random() * 10) }));
   }
-  if (res.success && res.results) return res.results;
+  if (res.success && res.results) {
+    cachedResults = res.results;
+    return cachedResults;
+  }
   return [];
 }
 
