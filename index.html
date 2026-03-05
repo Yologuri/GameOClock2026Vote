@@ -538,7 +538,7 @@
     height: 196px;
     position: relative;
     transform-style: preserve-3d;
-    animation: cardSpin 3s ease-in-out infinite;
+    animation: cardCornerSpin 4s linear infinite;
   }
 
   .mystery-card-face {
@@ -667,11 +667,9 @@
   .mystery-stars .star:nth-child(4) { bottom: 18%; right: 24%; animation-delay: 1.4s; }
   .mystery-stars .star:nth-child(5) { top: 50%; left: 12%; animation-delay: 0.7s; }
 
-  @keyframes cardSpin {
-    0%, 100% { transform: rotateX(12deg) rotateY(0deg); }
-    25% { transform: rotateX(12deg) rotateY(10deg) scale(1.02); }
-    50% { transform: rotateX(12deg) rotateY(180deg); }
-    75% { transform: rotateX(12deg) rotateY(170deg) scale(1.02); }
+  @keyframes cardCornerSpin {
+    from { transform: rotate(45deg) rotateY(0deg); }
+    to { transform: rotate(45deg) rotateY(360deg); }
   }
 
   @keyframes shimmer {
