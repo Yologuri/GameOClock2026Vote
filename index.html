@@ -863,16 +863,14 @@ function renderClosedPhase(content) {
   content.innerHTML = `
     <div class="card">
       <div class="closed-msg">
-        <div class="big">🔒</div>
-        <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:0.5rem">Submissions Closed</h2>
-        <p>Today's voting has ended. Check back tomorrow!</p>
+        <div class="big">🏆</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:0.5rem">Voting Has Ended</h2>
+        <p>Here are tonight's results!</p>
       </div>
     </div>
   `;
 
-  if (isAdmin && resultsRevealed) {
-    renderResults(content, true);
-  }
+  renderResults(content, true);
 }
 
 async function renderResults(container, append = false) {
