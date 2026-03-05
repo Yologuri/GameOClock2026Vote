@@ -1397,7 +1397,7 @@ function renderVotingPhase(content) {
   `;
 }
 
-function renderClosedPhase(content) {
+async function renderClosedPhase(content) {
   content.innerHTML = `
     <div class="card">
       <div class="closed-msg">
@@ -1418,7 +1418,7 @@ function renderClosedPhase(content) {
     <div id="tab-reward" class="tab-panel"></div>
   `;
 
-  renderResults(document.getElementById('tab-results'));
+  await renderResults(document.getElementById('tab-results'));
   refreshParticipantsTab();
   renderRewardCard(document.getElementById('tab-reward'));
 }
