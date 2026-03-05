@@ -1575,10 +1575,19 @@ async function toggleGameCompletion(gameName) {
   } else {
     p.completedGames.splice(idx, 1);
   }
-  saveParticipantLocal(p); // save instantly
-  await renderParticipantsTab(document.getElementById("tab-participants")); // re-render immediately with local data
-  // sync to server in background — don't await
-  syncParticipant(p).then(() => refreshParticipantsTab());
+  saveParticipantLocal(p);
+
+  // Update allParticipants cache locally so re-render is instant
+  const existingIdx = allParticipants.findIndex(pl => pl.gamertag === p.gamertag);
+  if (existingIdx >= 0) {
+    allParticipants[existingIdx].completedGames = [...p.completedGames];
+  }
+
+  // Re-render instantly from cache — no network calls
+  renderParticipantsTab(document.getElementById("tab-participants"));
+
+  // Sync to server silently in background
+  syncParticipant(p);
 }
 
 async function refreshParticipantsTab() {
