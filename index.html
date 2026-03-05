@@ -902,6 +902,110 @@
     color: var(--green);
     white-space: nowrap;
   }
+
+  /* ── Player Roster ── */
+  .roster-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .roster-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    animation: slideIn 0.25s ease;
+  }
+
+  .roster-item.is-you {
+    border-color: rgba(200,240,100,0.3);
+    background: rgba(200,240,100,0.04);
+  }
+
+  .roster-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: var(--text);
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .roster-item.is-you .roster-avatar {
+    background: rgba(200,240,100,0.15);
+    color: var(--accent);
+  }
+
+  .roster-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .roster-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .roster-item.is-you .roster-name { color: var(--accent); }
+
+  .roster-you-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .roster-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .roster-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .roster-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    background: var(--muted);
+  }
+
+  .roster-item.is-you .roster-bar-fill { background: var(--accent); }
+
+  .roster-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 30px;
+    text-align: right;
+  }
+
+  .roster-item.is-you .roster-count { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -1224,7 +1328,7 @@ function renderVotingPhase(content) {
       <div id="tab-participants" class="tab-panel"></div>
       <div id="tab-reward" class="tab-panel"></div>
     `;
-    renderParticipantsTab(document.getElementById('tab-participants'));
+    refreshParticipantsTab();
     renderRewardCard(document.getElementById('tab-reward'));
     return;
   }
@@ -1379,6 +1483,7 @@ function renderRewardCard(container) {
 
 // ── Participants ──
 const PARTICIPANT_KEY = "gameclock_participant";
+let allParticipants = []; // shared list from API
 
 function loadParticipant() {
   try {
@@ -1388,32 +1493,62 @@ function loadParticipant() {
   return { gamertag: "", completedGames: [] };
 }
 
-function saveParticipant(data) {
+function saveParticipantLocal(data) {
   try {
     localStorage.setItem(PARTICIPANT_KEY, JSON.stringify(data));
   } catch(e) {}
 }
 
-function setGamertag() {
+async function syncParticipant(p) {
+  saveParticipantLocal(p);
+  if (p.gamertag) {
+    await apiCall("updateParticipant", { gamertag: p.gamertag, completedGames: p.completedGames });
+  }
+}
+
+async function fetchParticipants() {
+  const res = await apiCall("getParticipants");
+  if (res.demo) {
+    // In demo mode, build from local + mock data
+    const local = loadParticipant();
+    const mock = [
+      { gamertag: "xShadowX", completedGames: options.slice(0, 2) },
+      { gamertag: "NightOwl99", completedGames: options.slice(0, 1) },
+      { gamertag: "PixelQueen", completedGames: [...options] },
+    ];
+    if (local.gamertag) {
+      return [local, ...mock.filter(m => m.gamertag !== local.gamertag)];
+    }
+    return mock;
+  }
+  if (res.success && res.participants) {
+    return res.participants;
+  }
+  // Fallback: just show local participant
+  const local = loadParticipant();
+  return local.gamertag ? [local] : [];
+}
+
+async function setGamertag() {
   const input = document.getElementById("gamertag-input");
   if (!input) return;
   const tag = input.value.trim();
   if (!tag) { showToast("Enter a gamertag", "error"); return; }
   const p = loadParticipant();
   p.gamertag = tag;
-  saveParticipant(p);
+  await syncParticipant(p);
   showToast("Gamertag saved!", "success");
-  renderParticipantsTab(document.getElementById("tab-participants"));
+  await refreshParticipantsTab();
 }
 
 function clearGamertag() {
   const p = loadParticipant();
   p.gamertag = "";
-  saveParticipant(p);
-  renderParticipantsTab(document.getElementById("tab-participants"));
+  saveParticipantLocal(p);
+  refreshParticipantsTab();
 }
 
-function toggleGameCompletion(gameName) {
+async function toggleGameCompletion(gameName) {
   const p = loadParticipant();
   const idx = p.completedGames.indexOf(gameName);
   if (idx === -1) {
@@ -1421,7 +1556,12 @@ function toggleGameCompletion(gameName) {
   } else {
     p.completedGames.splice(idx, 1);
   }
-  saveParticipant(p);
+  await syncParticipant(p);
+  await refreshParticipantsTab();
+}
+
+async function refreshParticipantsTab() {
+  allParticipants = await fetchParticipants();
   renderParticipantsTab(document.getElementById("tab-participants"));
 }
 
@@ -1429,10 +1569,11 @@ function renderParticipantsTab(container) {
   if (!container) return;
   const p = loadParticipant();
   const gameList = options.length > 0 ? options : [];
-  const completedCount = p.completedGames.filter(g => gameList.includes(g)).length;
   const totalGames = gameList.length;
-  const pct = totalGames > 0 ? Math.round((completedCount / totalGames) * 100) : 0;
+  const myCompleted = p.completedGames.filter(g => gameList.includes(g)).length;
+  const myPct = totalGames > 0 ? Math.round((myCompleted / totalGames) * 100) : 0;
 
+  // Gamertag input / display
   const gamertagSection = p.gamertag
     ? `<div class="gamertag-display">
         <span class="tag">${escHtml(p.gamertag)}</span>
@@ -1444,6 +1585,7 @@ function renderParticipantsTab(container) {
         <button class="btn-primary" onclick="setGamertag()">Set</button>
       </div>`;
 
+  // Game checklist (only shown when gamertag is set)
   const checklistHtml = gameList.length === 0
     ? '<div class="empty">No games to track yet.</div>'
     : gameList.map(name => {
@@ -1456,6 +1598,34 @@ function renderParticipantsTab(container) {
           </div>`;
       }).join('');
 
+  // Player roster — sorted by completion count descending
+  const sortedPlayers = [...allParticipants]
+    .map(pl => {
+      const count = (pl.completedGames || []).filter(g => gameList.includes(g)).length;
+      return { ...pl, count };
+    })
+    .sort((a, b) => b.count - a.count);
+
+  const rosterHtml = sortedPlayers.length === 0
+    ? '<div class="empty">No players yet — be the first to join!</div>'
+    : sortedPlayers.map(pl => {
+        const isYou = pl.gamertag === p.gamertag && p.gamertag;
+        const pct = totalGames > 0 ? Math.round((pl.count / totalGames) * 100) : 0;
+        const initial = pl.gamertag.charAt(0);
+        return `
+          <div class="roster-item ${isYou ? 'is-you' : ''}">
+            <div class="roster-avatar">${escHtml(initial)}</div>
+            <div class="roster-info">
+              <div class="roster-name">${escHtml(pl.gamertag)}</div>
+              ${isYou ? '<span class="roster-you-tag">You</span>' : ''}
+            </div>
+            <div class="roster-progress">
+              <div class="roster-bar"><div class="roster-bar-fill" style="width:${pct}%"></div></div>
+              <span class="roster-count">${pl.count}/${totalGames}</span>
+            </div>
+          </div>`;
+      }).join('');
+
   container.innerHTML = `
     <div class="card">
       <div class="card-header">
@@ -1464,16 +1634,16 @@ function renderParticipantsTab(container) {
       <div class="card-body">
         ${gamertagSection}
         ${p.gamertag ? `<div class="participants-progress">
-          <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
-          <span class="prog-text">${completedCount}/${totalGames}</span>
-        </div>` : '<p style="font-size:0.8rem;color:var(--muted)">Set your gamertag to track your progress.</p>'}
+          <div class="prog-bar"><div class="prog-fill" style="width:${myPct}%"></div></div>
+          <span class="prog-text">${myCompleted}/${totalGames}</span>
+        </div>` : '<p style="font-size:0.8rem;color:var(--muted)">Set your gamertag to join the player list.</p>'}
       </div>
     </div>
 
     ${p.gamertag ? `<div class="card">
       <div class="card-header">
-        <span class="card-title">Games Completed</span>
-        <span style="font-size:0.8rem;color:var(--muted)">${completedCount} of ${totalGames} done</span>
+        <span class="card-title">Your Games</span>
+        <span style="font-size:0.8rem;color:var(--muted)">${myCompleted} of ${totalGames} done</span>
       </div>
       <div class="card-body">
         <div class="game-checklist">
@@ -1481,6 +1651,18 @@ function renderParticipantsTab(container) {
         </div>
       </div>
     </div>` : ''}
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">All Players</span>
+        <span style="font-size:0.8rem;color:var(--muted)">${sortedPlayers.length} joined</span>
+      </div>
+      <div class="card-body">
+        <div class="roster-list">
+          ${rosterHtml}
+        </div>
+      </div>
+    </div>
   `;
 }
 
