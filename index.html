@@ -1569,19 +1569,14 @@ async function renderParticipantsTab(container) {
   if (!container) return;
   const p = loadParticipant();
 
-  // Filter to top 12 games by votes (keeping ties)
+  // Filter to top 12 games by votes (strict limit of 12)
   let gameList = options.length > 0 ? [...options] : [];
   try {
     const results = await fetchResults();
     if (results && results.length > 0) {
       results.sort((a, b) => b.votes - a.votes);
-      if (results.length > 12) {
-        const cutoffVotes = results[11].votes;
-        const top = results.filter(r => r.votes >= cutoffVotes);
-        gameList = top.map(r => r.name);
-      } else {
-        gameList = results.map(r => r.name);
-      }
+      const top = results.slice(0, 12);
+      gameList = top.map(r => r.name);
     }
   } catch (e) {
     // Fall back to full options list on error
