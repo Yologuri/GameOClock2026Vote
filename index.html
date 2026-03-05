@@ -757,6 +757,255 @@
 
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
+
+  /* ── Participants ── */
+  .participant-input-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .gamertag-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid rgba(200,240,100,0.3);
+    border-radius: 10px;
+    background: rgba(200,240,100,0.04);
+    margin-bottom: 1.25rem;
+  }
+
+  .gamertag-display .tag {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+
+  .gamertag-display .change-btn {
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .gamertag-display .change-btn:hover { color: var(--text); }
+
+  .game-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .game-check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .game-check-item:hover {
+    border-color: rgba(200,240,100,0.2);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .game-check-item.completed {
+    border-color: rgba(93,235,176,0.4);
+    background: rgba(93,235,176,0.06);
+  }
+
+  .game-check-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 0.75rem;
+    color: transparent;
+  }
+
+  .game-check-item.completed .game-check-box {
+    background: var(--green);
+    border-color: var(--green);
+    color: #0f0e11;
+    box-shadow: 0 0 12px rgba(93,235,176,0.3);
+    transform: scale(1.08);
+  }
+
+  .game-check-name {
+    flex: 1;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: opacity 0.2s;
+  }
+
+  .game-check-item.completed .game-check-name {
+    color: var(--green);
+  }
+
+  .game-check-status {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+
+  .game-check-item.completed .game-check-status {
+    color: var(--green);
+  }
+
+  .participants-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .participants-progress .prog-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .participants-progress .prog-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .participants-progress .prog-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  /* ── Player Roster ── */
+  .roster-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .roster-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    animation: slideIn 0.25s ease;
+  }
+
+  .roster-item.is-you {
+    border-color: rgba(200,240,100,0.3);
+    background: rgba(200,240,100,0.04);
+  }
+
+  .roster-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: var(--text);
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .roster-item.is-you .roster-avatar {
+    background: rgba(200,240,100,0.15);
+    color: var(--accent);
+  }
+
+  .roster-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .roster-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .roster-item.is-you .roster-name { color: var(--accent); }
+
+  .roster-you-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .roster-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .roster-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .roster-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    background: var(--muted);
+  }
+
+  .roster-item.is-you .roster-bar-fill { background: var(--accent); }
+
+  .roster-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 30px;
+    text-align: right;
+  }
+
+  .roster-item.is-you .roster-count { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -1063,6 +1312,7 @@ function renderVotingPhase(content) {
     content.innerHTML = `
       <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('results')"><span class="tab-dot"></span> Status</button>
+        <button class="tab-btn" onclick="switchTab('participants')"><span class="tab-dot"></span> Players</button>
         <button class="tab-btn" onclick="switchTab('reward')"><span class="tab-dot"></span> Reward</button>
       </div>
 
@@ -1075,8 +1325,10 @@ function renderVotingPhase(content) {
           </div>
         </div>
       </div>
+      <div id="tab-participants" class="tab-panel"></div>
       <div id="tab-reward" class="tab-panel"></div>
     `;
+    refreshParticipantsTab();
     renderRewardCard(document.getElementById('tab-reward'));
     return;
   }
@@ -1135,14 +1387,17 @@ function renderClosedPhase(content) {
 
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('results')"><span class="tab-dot"></span> Results</button>
+      <button class="tab-btn" onclick="switchTab('participants')"><span class="tab-dot"></span> Players</button>
       <button class="tab-btn" onclick="switchTab('reward')"><span class="tab-dot"></span> Reward</button>
     </div>
 
     <div id="tab-results" class="tab-panel active"></div>
+    <div id="tab-participants" class="tab-panel"></div>
     <div id="tab-reward" class="tab-panel"></div>
   `;
 
   renderResults(document.getElementById('tab-results'));
+  renderParticipantsTab(document.getElementById('tab-participants'));
   renderRewardCard(document.getElementById('tab-reward'));
 }
 
@@ -1190,7 +1445,7 @@ function switchTab(tabId) {
 
   const btns = document.querySelectorAll('.tab-btn');
   btns.forEach(b => {
-    if (b.textContent.trim().toLowerCase().includes(tabId)) b.classList.add('active');
+    if (b.getAttribute('onclick')?.includes("'" + tabId + "'")) b.classList.add('active');
   });
 }
 
@@ -1224,6 +1479,191 @@ function renderRewardCard(container) {
     </div>
   `;
   container.insertAdjacentHTML('beforeend', html);
+}
+
+// ── Participants ──
+const PARTICIPANT_KEY = "gameclock_participant";
+let allParticipants = []; // shared list from API
+
+function loadParticipant() {
+  try {
+    const raw = localStorage.getItem(PARTICIPANT_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { gamertag: "", completedGames: [] };
+}
+
+function saveParticipantLocal(data) {
+  try {
+    localStorage.setItem(PARTICIPANT_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+async function syncParticipant(p) {
+  saveParticipantLocal(p);
+  if (p.gamertag) {
+    await apiCall("updateParticipant", { gamertag: p.gamertag, completedGames: p.completedGames });
+  }
+}
+
+async function fetchParticipants() {
+  const res = await apiCall("getParticipants");
+  if (res.demo) {
+    // In demo mode, build from local + mock data
+    const local = loadParticipant();
+    const mock = [
+      { gamertag: "xShadowX", completedGames: options.slice(0, 2) },
+      { gamertag: "NightOwl99", completedGames: options.slice(0, 1) },
+      { gamertag: "PixelQueen", completedGames: [...options] },
+    ];
+    if (local.gamertag) {
+      return [local, ...mock.filter(m => m.gamertag !== local.gamertag)];
+    }
+    return mock;
+  }
+  if (res.success && res.participants) {
+    return res.participants;
+  }
+  // Fallback: just show local participant
+  const local = loadParticipant();
+  return local.gamertag ? [local] : [];
+}
+
+async function setGamertag() {
+  const input = document.getElementById("gamertag-input");
+  if (!input) return;
+  const tag = input.value.trim();
+  if (!tag) { showToast("Enter a gamertag", "error"); return; }
+  const p = loadParticipant();
+  p.gamertag = tag;
+  await syncParticipant(p);
+  showToast("Gamertag saved!", "success");
+  await refreshParticipantsTab();
+}
+
+function clearGamertag() {
+  const p = loadParticipant();
+  p.gamertag = "";
+  saveParticipantLocal(p);
+  refreshParticipantsTab();
+}
+
+async function toggleGameCompletion(gameName) {
+  const p = loadParticipant();
+  const idx = p.completedGames.indexOf(gameName);
+  if (idx === -1) {
+    p.completedGames.push(gameName);
+  } else {
+    p.completedGames.splice(idx, 1);
+  }
+  await syncParticipant(p);
+  await refreshParticipantsTab();
+}
+
+async function refreshParticipantsTab() {
+  allParticipants = await fetchParticipants();
+  renderParticipantsTab(document.getElementById("tab-participants"));
+}
+
+function renderParticipantsTab(container) {
+  if (!container) return;
+  const p = loadParticipant();
+  const gameList = options.length > 0 ? options : [];
+  const totalGames = gameList.length;
+  const myCompleted = p.completedGames.filter(g => gameList.includes(g)).length;
+  const myPct = totalGames > 0 ? Math.round((myCompleted / totalGames) * 100) : 0;
+
+  // Gamertag input / display
+  const gamertagSection = p.gamertag
+    ? `<div class="gamertag-display">
+        <span class="tag">${escHtml(p.gamertag)}</span>
+        <button class="change-btn" onclick="clearGamertag()">change</button>
+      </div>`
+    : `<div class="participant-input-row">
+        <input type="text" id="gamertag-input" placeholder="Enter your gamertag..." maxlength="30"
+          onkeydown="if(event.key==='Enter') setGamertag()" />
+        <button class="btn-primary" onclick="setGamertag()">Set</button>
+      </div>`;
+
+  // Game checklist (only shown when gamertag is set)
+  const checklistHtml = gameList.length === 0
+    ? '<div class="empty">No games to track yet.</div>'
+    : gameList.map(name => {
+        const done = p.completedGames.includes(name);
+        return `
+          <div class="game-check-item ${done ? 'completed' : ''}" onclick="toggleGameCompletion('${escHtml(name).replace(/'/g, "\\'")}')">
+            <div class="game-check-box">${done ? '✓' : ''}</div>
+            <span class="game-check-name">${escHtml(name)}</span>
+            <span class="game-check-status">${done ? 'Done' : 'Not yet'}</span>
+          </div>`;
+      }).join('');
+
+  // Player roster — sorted by completion count descending
+  const sortedPlayers = [...allParticipants]
+    .map(pl => {
+      const count = (pl.completedGames || []).filter(g => gameList.includes(g)).length;
+      return { ...pl, count };
+    })
+    .sort((a, b) => b.count - a.count);
+
+  const rosterHtml = sortedPlayers.length === 0
+    ? '<div class="empty">No players yet — be the first to join!</div>'
+    : sortedPlayers.map(pl => {
+        const isYou = pl.gamertag === p.gamertag && p.gamertag;
+        const pct = totalGames > 0 ? Math.round((pl.count / totalGames) * 100) : 0;
+        const initial = pl.gamertag.charAt(0);
+        return `
+          <div class="roster-item ${isYou ? 'is-you' : ''}">
+            <div class="roster-avatar">${escHtml(initial)}</div>
+            <div class="roster-info">
+              <div class="roster-name">${escHtml(pl.gamertag)}</div>
+              ${isYou ? '<span class="roster-you-tag">You</span>' : ''}
+            </div>
+            <div class="roster-progress">
+              <div class="roster-bar"><div class="roster-bar-fill" style="width:${pct}%"></div></div>
+              <span class="roster-count">${pl.count}/${totalGames}</span>
+            </div>
+          </div>`;
+      }).join('');
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Your Gamertag</span>
+      </div>
+      <div class="card-body">
+        ${gamertagSection}
+        ${p.gamertag ? `<div class="participants-progress">
+          <div class="prog-bar"><div class="prog-fill" style="width:${myPct}%"></div></div>
+          <span class="prog-text">${myCompleted}/${totalGames}</span>
+        </div>` : '<p style="font-size:0.8rem;color:var(--muted)">Set your gamertag to join the player list.</p>'}
+      </div>
+    </div>
+
+    ${p.gamertag ? `<div class="card">
+      <div class="card-header">
+        <span class="card-title">Your Games</span>
+        <span style="font-size:0.8rem;color:var(--muted)">${myCompleted} of ${totalGames} done</span>
+      </div>
+      <div class="card-body">
+        <div class="game-checklist">
+          ${checklistHtml}
+        </div>
+      </div>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">All Players</span>
+        <span style="font-size:0.8rem;color:var(--muted)">${sortedPlayers.length} joined</span>
+      </div>
+      <div class="card-body">
+        <div class="roster-list">
+          ${rosterHtml}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // ── Actions ──
