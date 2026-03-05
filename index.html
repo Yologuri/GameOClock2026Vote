@@ -1614,13 +1614,9 @@ async function renderParticipantsTab(container) {
 
   // Filter to top 12 games by votes (keeping ties as optional picks)
   const COMPLETION_GOAL = 12;
-  let gameList = options.length > 0 ? [...options] : [];
-  let requiredGames = [];
-  let tiedGames = [];
-  const gameList = cachedGameList.length > 0 ? cachedGameList : [...options];
+  const gameList = cachedGameList.length > 0 ? cachedGameList : (options.length > 0 ? [...options] : []);
   const requiredGames = cachedRequiredGames.length > 0 ? cachedRequiredGames : gameList;
   const tiedGames = cachedTiedGames;
-  const totalGames = gameList.length;
   const totalGames = gameList.length;
   const myCompleted = Math.min(p.completedGames.filter(g => gameList.includes(g)).length, COMPLETION_GOAL);
   const myPct = COMPLETION_GOAL > 0 ? Math.min(Math.round((myCompleted / COMPLETION_GOAL) * 100), 100) : 0;
