@@ -1571,8 +1571,10 @@ async function toggleGameCompletion(gameName) {
   } else {
     p.completedGames.splice(idx, 1);
   }
-  await syncParticipant(p);
-  await refreshParticipantsTab();
+  saveParticipantLocal(p); // save instantly
+  await renderParticipantsTab(document.getElementById("tab-participants")); // re-render immediately with local data
+  // sync to server in background — don't await
+  syncParticipant(p).then(() => refreshParticipantsTab());
 }
 
 async function refreshParticipantsTab() {
