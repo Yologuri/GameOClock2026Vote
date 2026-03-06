@@ -1,47 +1,49 @@
 // ── Google Apps Script Backend for Vote Board ──
 // Paste this entire file into your Apps Script editor
- 
+
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     const action = data.action;
+    const year = data.year || new Date().getFullYear();
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let result;
- 
+
     if (action === "addOption") {
-      result = addOption(ss, data.option);
+      result = addOption(ss, data.option, year);
     } else if (action === "submitVotes") {
-      result = submitVotes(ss, data.votes);
+      result = submitVotes(ss, data.votes, year);
     } else if (action === "updateParticipant") {
-      result = updateParticipant(ss, data.gamertag, data.completedGames);
+      result = updateParticipant(ss, data.gamertag, data.completedGames, year);
     } else {
       result = { success: false, error: "Unknown action" };
     }
- 
+
     return jsonResponse(result);
   } catch(err) {
     return jsonResponse({ success: false, error: err.message });
   }
 }
- 
+
 function doGet(e) {
   try {
     const action = e.parameter.action;
     const callback = e.parameter.callback; // JSONP callback name
+    const year = e.parameter.year || new Date().getFullYear();
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let result;
- 
+
     if (action === "getOptions") {
-      result = getOptions(ss);
+      result = getOptions(ss, year);
     } else if (action === "getResults") {
-      result = getResults(ss);
+      result = getResults(ss, year);
     } else if (action === "getParticipants") {
-      result = getParticipants(ss);
+      result = getParticipants(ss, year);
     } else {
       result = { success: false, error: "Unknown action" };
     }
- 
-    // If a JSONP callback was requested, wrap in it — this bypasses CORS
+
+    // If a JSONP callback was requested, wrap in it -- this bypasses CORS
     if (callback) {
       return ContentService
         .createTextOutput(callback + "(" + JSON.stringify(result) + ")")
@@ -59,40 +61,40 @@ function doGet(e) {
     return jsonResponse(errResult);
   }
 }
- 
+
 function jsonResponse(obj) {
   return ContentService
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
- 
+
 // ── Options ──
- 
-function addOption(ss, option) {
+
+function addOption(ss, option, year) {
   if (!option || option.trim() === "") {
     return { success: false, error: "Empty option" };
   }
-  const sheet = getOrCreateSheet(ss, "Options");
+  const sheet = getOrCreateSheet(ss, "Options_" + year);
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(["Timestamp", "Option"]);
   }
   sheet.appendRow([new Date(), option.trim()]);
   return { success: true };
 }
- 
-function getOptions(ss) {
-  const sheet = getOrCreateSheet(ss, "Options");
+
+function getOptions(ss, year) {
+  const sheet = getOrCreateSheet(ss, "Options_" + year);
   const last = sheet.getLastRow();
   if (last <= 1) return { success: true, options: [] };
   const data = sheet.getRange(2, 2, last - 1, 1).getValues();
   const options = data.map(r => r[0]).filter(v => v !== "");
   return { success: true, options };
 }
- 
+
 // ── Votes ──
- 
-function submitVotes(ss, votes) {
-  const sheet = getOrCreateSheet(ss, "Votes");
+
+function submitVotes(ss, votes, year) {
+  const sheet = getOrCreateSheet(ss, "Votes_" + year);
   if (sheet.getLastRow() === 0) {
     const headers = ["Timestamp", ...votes.map(v => v.name)];
     sheet.appendRow(headers);
@@ -101,9 +103,9 @@ function submitVotes(ss, votes) {
   sheet.appendRow(row);
   return { success: true };
 }
- 
-function getResults(ss) {
-  const sheet = getOrCreateSheet(ss, "Votes");
+
+function getResults(ss, year) {
+  const sheet = getOrCreateSheet(ss, "Votes_" + year);
   const last = sheet.getLastRow();
   if (last <= 1) return { success: true, results: [] };
   const headers = sheet.getRange(1, 2, 1, sheet.getLastColumn() - 1).getValues()[0];
@@ -117,21 +119,21 @@ function getResults(ss) {
   const results = headers.map((name, i) => ({ name, votes: totals[i] }));
   return { success: true, results };
 }
- 
+
 // ── Participants ──
- 
-function updateParticipant(ss, gamertag, completedGames) {
+
+function updateParticipant(ss, gamertag, completedGames, year) {
   if (!gamertag || gamertag.trim() === "") {
     return { success: false, error: "Empty gamertag" };
   }
   gamertag = gamertag.trim();
   completedGames = completedGames || [];
- 
-  const sheet = getOrCreateSheet(ss, "Participants");
+
+  const sheet = getOrCreateSheet(ss, "Participants_" + year);
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(["Gamertag", "CompletedGames", "LastUpdated"]);
   }
- 
+
   // Find existing row for this gamertag (upsert)
   const last = sheet.getLastRow();
   let existingRow = -1;
@@ -144,9 +146,9 @@ function updateParticipant(ss, gamertag, completedGames) {
       }
     }
   }
- 
+
   const gamesJson = JSON.stringify(completedGames);
- 
+
   if (existingRow > 0) {
     // Update existing row
     sheet.getRange(existingRow, 1, 1, 3).setValues([[gamertag, gamesJson, new Date()]]);
@@ -154,15 +156,15 @@ function updateParticipant(ss, gamertag, completedGames) {
     // Append new row
     sheet.appendRow([gamertag, gamesJson, new Date()]);
   }
- 
+
   return { success: true };
 }
- 
-function getParticipants(ss) {
-  const sheet = getOrCreateSheet(ss, "Participants");
+
+function getParticipants(ss, year) {
+  const sheet = getOrCreateSheet(ss, "Participants_" + year);
   const last = sheet.getLastRow();
   if (last <= 1) return { success: true, participants: [] };
- 
+
   const data = sheet.getRange(2, 1, last - 1, 2).getValues();
   const participants = data
     .filter(r => r[0] !== "")
@@ -175,12 +177,12 @@ function getParticipants(ss) {
       }
       return { gamertag: String(r[0]), completedGames };
     });
- 
+
   return { success: true, participants };
 }
- 
+
 // ── Utility ──
- 
+
 function getOrCreateSheet(ss, name) {
   let sheet = ss.getSheetByName(name);
   if (!sheet) sheet = ss.insertSheet(name);
