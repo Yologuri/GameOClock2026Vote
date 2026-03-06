@@ -363,43 +363,6 @@
   .toast.error { background: #2d1a1a; border-color: var(--danger); color: var(--danger); }
   .toast.success { background: #162d22; border-color: var(--green); color: var(--green); }
 
-  /* ── Admin ── */
-  .admin-bar {
-    text-align: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px dashed var(--border);
-  }
-
-  .admin-toggle {
-    font-size: 0.75rem;
-    color: var(--muted);
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-decoration: underline;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .admin-panel {
-    display: none;
-    margin-top: 1rem;
-  }
-
-  .admin-panel.visible { display: block; }
-
-  .admin-input-row {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-  }
-
-  .admin-input-row input {
-    max-width: 160px;
-    text-align: center;
-    letter-spacing: 0.1em;
-  }
-
   /* ── Results ── */
   .results-list {
     display: flex;
@@ -1043,17 +1006,6 @@
   <!-- Main content -->
   <div id="main-content"></div>
 
-  <!-- Admin bar -->
-  <div class="admin-bar">
-    <button class="admin-toggle" onclick="toggleAdminPanel()">admin</button>
-    <div class="admin-panel" id="admin-panel">
-      <div class="admin-input-row">
-        <input type="password" id="admin-pw" placeholder="password" />
-        <button class="btn-primary" onclick="adminLogin()">Enter</button>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1063,7 +1015,6 @@
 //  CONFIGURATION — edit these values
 // ═══════════════════════════════════════════════════
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbyM8wu-m7FP7j0d4GeqfAPpkKFoL1E6IkrcJu63Quw44YZB-xjwJlA47sZ-iomGrZmQ/exec"; // paste your Apps Script web app URL
-const ADMIN_PASSWORD = "abc123";
 const TOTAL_VOTES = 5;
 const MAX_OPTIONS_PER_USER = 2;
 const TIMEZONE = "America/New_York"; // Eastern
@@ -1085,9 +1036,6 @@ let userOptionCount = 0;
 let votesAllocated = {};
 let hasVoted = false;
 let hasSubmittedOptions = false;
-let isAdmin = false;
-let resultsRevealed = false;
-let phaseOverride = null;
 let cachedResults = null;
 let cachedGameList = [];
 let cachedRequiredGames = [];
@@ -1118,7 +1066,6 @@ function saveUserState() {
 
 // ── Phase detection (month-based) ──
 function detectPhase() {
-  if (phaseOverride) return phaseOverride;
   const now = new Date();
   const etNow = new Date(now.toLocaleString("en-US", { timeZone: TIMEZONE }));
   const month = etNow.getMonth() + 1; // 1-indexed
@@ -1853,50 +1800,6 @@ async function submitVotes() {
     btn.disabled = false;
     btn.textContent = "Submit My Votes";
   }
-}
-
-// ── Admin ──
-function toggleAdminPanel() {
-  document.getElementById("admin-panel").classList.toggle("visible");
-}
-
-function adminLogin() {
-  const pw = document.getElementById("admin-pw").value;
-  if (pw === ADMIN_PASSWORD) {
-    isAdmin = true;
-    renderAdminControls();
-    showToast("Admin access granted", "success");
-  } else {
-    showToast("Wrong password", "error");
-    document.getElementById("admin-pw").value = "";
-  }
-}
-
-function renderAdminControls() {
-  const panel = document.getElementById("admin-panel");
-  panel.innerHTML = `
-    <p style="font-size:0.8rem;color:var(--green);font-weight:700;margin-bottom:0.75rem">✓ Admin mode active</p>
-    <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
-      ${phase !== "closed" ? `<button class="btn-primary" onclick="endVotingNow()" style="background:var(--danger);color:#fff;border:none;font-family:'Syne',sans-serif;font-weight:700">End Voting & Show Results</button>` : ''}
-      <button class="btn-primary" onclick="revealResults()" style="background:var(--gold);color:#0f0e11;border:none;font-family:'Syne',sans-serif;font-weight:700">Reveal Results</button>
-    </div>
-  `;
-}
-
-function endVotingNow() {
-  phaseOverride = "closed";
-  phase = "closed";
-  render();
-  if (isAdmin) renderAdminControls();
-  showToast("Voting ended — results are live!", "success");
-}
-
-async function revealResults() {
-  resultsRevealed = true;
-  showToast("Loading results…");
-  const content = document.getElementById("main-content");
-  await renderResults(content, true);
-  showToast("Results revealed!", "success");
 }
 
 // ── Countdown ──
