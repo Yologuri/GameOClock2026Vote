@@ -1133,26 +1133,22 @@ function detectPhase() {
 function getPhaseEndTime() {
   const now = new Date();
   const etNow = new Date(now.toLocaleString("en-US", { timeZone: TIMEZONE }));
-  const result = new Date(etNow);
-  if (phase === "submission") {
-    result.setHours(VOTING_START_HOUR, 0, 0, 0);
-  } else {
-    result.setHours(23, 59, 59, 0);
-  }
-  // Convert back to UTC-based Date for diff calculation
-  const diff = result - etNow;
+  // Count down to end of year (Dec 31, 11:59:59 PM ET)
+  const endOfYear = new Date(etNow.getFullYear(), 11, 31, 23, 59, 59, 0);
+  const diff = endOfYear - etNow;
   return diff;
 }
 
 function formatCountdown(ms) {
-  if (ms <= 0) return "ending soon";
+  if (ms <= 0) return "challenge ended!";
   const s = Math.floor(ms / 1000);
-  const h = Math.floor(s / 3600);
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
   const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
+  if (d > 0) return `${d}d ${h}h ${m}m remaining`;
   if (h > 0) return `${h}h ${m}m remaining`;
-  if (m > 0) return `${m}m ${sec}s remaining`;
-  return `${sec}s remaining`;
+  if (m > 0) return `${m}m ${Math.floor(s % 60)}s remaining`;
+  return `${Math.floor(s % 60)}s remaining`;
 }
 
 // ── API calls ──
@@ -1875,12 +1871,9 @@ async function revealResults() {
 
 // ── Countdown ──
 function updateCountdown() {
-  if (phase === "closed") {
-    document.getElementById("countdown-wrap").style.display = "none";
-    return;
-  }
   const ms = getPhaseEndTime();
   document.getElementById("countdown-text").textContent = formatCountdown(ms);
+  document.getElementById("countdown-wrap").style.display = ms <= 0 ? "none" : "";
 }
 
 // ── Utils ──
